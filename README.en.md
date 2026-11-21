@@ -1,45 +1,46 @@
-# Microsoft Infrastructure Labs
+# Microsoft Infra Labs
 
-**On-premises Microsoft infrastructure lab as code:** Windows Server, Active Directory, Group Policy, DNS/DHCP, file services, backup and restore testing, Zabbix monitoring and FortiGate network segmentation, all automated with PowerShell.
+A home lab where I build a company's Microsoft environment from scratch: domain, Group Policy, DNS, DHCP, file server, backup, monitoring and firewall. Everything runs on Hyper-V on my PC and is automated with PowerShell.
 
 [Português](README.md) | [English](README.en.md)
 
 [![PowerShell CI](https://github.com/matheuslab-bit/microsoft-infra-labs/actions/workflows/powershell-ci.yml/badge.svg)](https://github.com/matheuslab-bit/microsoft-infra-labs/actions/workflows/powershell-ci.yml)
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207.x-5391FE?logo=powershell&logoColor=white)
-![Windows Server](https://img.shields.io/badge/Windows%20Server-2022-0078D4?logo=windows&logoColor=white)
-![Zabbix](https://img.shields.io/badge/Zabbix-7.0%20LTS-D40000)
 
-This repository rebuilds, in a Hyper-V home lab, the environment an infrastructure analyst runs day to day. Each lab has a goal, justified design decisions, idempotent scripts that support `-WhatIf`, and a validation checklist. Lab documentation is written in Brazilian Portuguese; code, comments and script help are in English.
+## Why this repository exists
 
-> Google Cloud portfolio (Terraform, IAP, GCS): [matheuslab-bit/google-cloud-portfolio](https://github.com/matheuslab-bit/google-cloud-portfolio)
+I have worked in IT infrastructure since 2014. I have managed Active Directory for a large contact center, including Group Policy, Hyper-V, backups and FortiGate, and I have used Zabbix and PRTG to monitor business customers.
+
+This repository rebuilds that kind of environment at home, documented and repeatable, so I can practice, test changes safely and show how I work. The lab write-ups are in Brazilian Portuguese; script help and code comments are in English.
+
+My cloud work lives in a separate repository: [google-cloud-portfolio](https://github.com/matheuslab-bit/google-cloud-portfolio).
+
+## The environment
+
+Four VMs on an isolated network (`10.50.0.0/24`) with internet access through NAT on the host: DC01 (domain controller, DNS, DHCP), FS01 (file server and backup), MON01 (Zabbix on Ubuntu + Docker) and CL01 (Windows 11 client). Domain: `corp.lab.internal`. All users are fictitious.
 
 ## Labs
 
-| # | Lab | What it demonstrates |
-| --- | --- | --- |
-| 01 | [Hyper-V environment](labs/01-hyperv-environment/README.md) | Isolated internal network with NAT; Gen 2 VMs with Secure Boot and vTPM built from one configuration file |
-| 02 | [Active Directory](labs/02-active-directory/README.md) | New forest with integrated DNS, tiered OUs, CSV bulk user provisioning with AGDLP and an audit report |
-| 03 | [DNS and DHCP](labs/03-dns-dhcp/README.md) | Reverse zone, forwarders, scavenging, authorized DHCP scope with pre-flight range validation |
-| 04 | [Group Policy](labs/04-group-policy/README.md) | Password/lockout policy, fine-grained policy for admins, workstation security baseline, versioned GPO backups |
-| 05 | [File server](labs/05-file-server/README.md) | Departmental shares, NTFS through AGDLP groups, access-based enumeration |
-| 06 | [Backup and recovery](labs/06-backup-recovery/README.md) | Versioned backups with SHA256 manifest, **automated restore testing**, system state backup, AD Recycle Bin drill |
-| 07 | [Zabbix monitoring](labs/07-monitoring-zabbix/README.md) | Zabbix 7.0 LTS on Docker, Agent 2 with custom items (AD replication, locked accounts, backup age) |
-| 08 | [FortiGate and VLANs](labs/08-fortigate-segmentation/README.md) | Server/workstation/management VLANs, DHCP relay, least-privilege access matrix, implicit-deny logging |
-| 09 | [Operations automation](labs/09-operations-automation/README.md) | Daily AD health report, standardized employee offboarding, stale account hygiene |
+1. [Hyper-V environment](labs/01-hyperv-environment/README.md): isolated network and VMs created from one config file.
+2. [Active Directory](labs/02-active-directory/README.md): DC promotion, OU structure, bulk user creation from CSV.
+3. [DNS and DHCP](labs/03-dns-dhcp/README.md): reverse zone, forwarders, scavenging, DHCP scope.
+4. [Group Policy](labs/04-group-policy/README.md): password policy, stricter rule for IT, workstation baseline, GPO backups.
+5. [File server](labs/05-file-server/README.md): department shares with group-based permissions (AGDLP).
+6. [Backup and recovery](labs/06-backup-recovery/README.md): backups with integrity check, restore testing, AD Recycle Bin.
+7. [Zabbix monitoring](labs/07-monitoring-zabbix/README.md): Zabbix on Docker with custom AD and backup items.
+8. [FortiGate and VLANs](labs/08-fortigate-segmentation/README.md): network split into VLANs with access rules between them.
+9. [Day-to-day automation](labs/09-operations-automation/README.md): AD health report, employee offboarding, stale accounts.
 
-## Engineering practices
+## How the scripts work
 
-- **Configuration as code:** network, VMs, domain, OUs, DHCP, shares and backup come from [`config/lab.psd1`](config/lab.psd1).
-- **Idempotent and safe:** every state-changing script supports `-WhatIf`/`-Confirm`, enforced by a test.
-- **No secrets in code:** passwords are prompted as `SecureString`; `.env` is git-ignored; a test rejects hard-coded passwords.
-- **Shared, unit-tested module:** [`modules/InfraLab`](modules/InfraLab) handles logging, configuration, logon names and IPv4 math.
-- **CI:** PSScriptAnalyzer, Pester on Ubuntu and Windows, and `docker compose config` validation.
-- **Compatibility:** ASCII-only scripts that run on Windows PowerShell 5.1 and PowerShell 7.
+- All settings live in [`config/lab.psd1`](config/lab.psd1).
+- Scripts can run more than once; they only create what is missing.
+- Every script that changes something supports `-WhatIf`.
+- No passwords in code: they are prompted at run time.
+- Shared functions live in [`modules/InfraLab`](modules/InfraLab).
+- They run on Windows PowerShell 5.1 and PowerShell 7.
 
-## Status
+GitHub Actions runs PSScriptAnalyzer, Pester tests on Ubuntu and Windows, and a `docker compose config` check on every push.
 
-All labs are validated in CI (lint and tests). Execution in the Hyper-V lab is in progress; each lab README has its validation checklist. See the [roadmap](ROADMAP.md).
+## Current status
 
----
-
-*Lab environment with fictitious data. Review scripts with `-WhatIf` before running them anywhere real.*
+The scripts pass CI. Next step: run each lab on my Hyper-V host and tick the checklist at the end of each lab README. See the [roadmap](ROADMAP.md).

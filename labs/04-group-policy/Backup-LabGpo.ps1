@@ -1,10 +1,8 @@
 <#
 .SYNOPSIS
-    Backs up every GPO in the domain to a timestamped folder, exports an HTML report per GPO and prunes old backups.
+    Backs up all GPOs to a dated folder, saves an HTML report of each one and deletes old backups.
 .DESCRIPTION
-    Intended to run as a scheduled task on a domain controller. Each run creates <BackupRoot>\yyyy-MM-dd_HHmm
-    containing Backup-GPO output plus readable HTML reports, so a broken policy can be compared and restored
-    with Restore-GPO / Import-GPO.
+    Meant to run as a scheduled task on the DC. Use Restore-GPO to bring a GPO back from a backup folder.
 .EXAMPLE
     .\Backup-LabGpo.ps1 -BackupRoot E:\Backups\GPO -RetentionDays 30
 #>

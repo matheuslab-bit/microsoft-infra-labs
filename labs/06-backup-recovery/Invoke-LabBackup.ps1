@@ -1,13 +1,10 @@
 <#
 .SYNOPSIS
-    Runs the lab backup routine: versioned file backup of the shares with Robocopy and, on a DC, a system state backup.
+    Backs up the shares with Robocopy (keeping permissions) and, optionally, the DC system state.
 .DESCRIPTION
-    - Files: each run mirrors the configured sources into <Target>\files\yyyy-MM-dd_HHmm, preserving NTFS ACLs
-      (/COPYALL), and writes a SHA256 manifest used later by Test-LabRestore.ps1.
-    - System state (-IncludeSystemState): wbadmin system state backup, which contains the AD database (NTDS),
-      SYSVOL and the registry. Requires the Windows-Server-Backup feature and a dedicated volume.
-    - Retention: snapshot folders older than RetentionDays are removed.
-    Robocopy exit codes 0-7 mean success; 8 or higher is a failure and stops the script.
+    Each run goes to a new dated folder with a _manifest.csv holding the SHA256 of every file,
+    which Test-LabRestore.ps1 uses later. Folders older than the retention are deleted.
+    Robocopy exit codes 8 and above are treated as failure.
 .EXAMPLE
     .\Invoke-LabBackup.ps1 -WhatIf
 .EXAMPLE

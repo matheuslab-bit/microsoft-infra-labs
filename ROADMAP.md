@@ -1,28 +1,28 @@
 # Roadmap
 
-## Concluído
+## Feito
 
-- [x] Labs 01–09 publicados com scripts, documentação e checklists
-- [x] CI com PSScriptAnalyzer, Pester (Ubuntu e Windows) e validação do docker-compose
-- [x] Módulo `InfraLab` com testes unitários
+- [x] Scripts e documentação dos labs 01 a 09
+- [x] CI com lint, testes no Ubuntu e no Windows e validação do docker-compose
+- [x] Módulo `InfraLab` com testes
 
-## Em andamento
+## Agora
 
-- [ ] Executar os labs 01–09 no Hyper-V e marcar os checklists de validação
-- [ ] Prints e evidências (gpresult, Zabbix, relatório de saúde) em cada README
+- [ ] Executar os labs 01 a 09 no Hyper-V e marcar os checklists
+- [ ] Adicionar prints em cada lab (gpresult, painel do Zabbix, relatório de saúde do AD)
 
 ## Próximos labs
 
-- [ ] **Lab 10 — Atualizações:** WSUS ou Azure Update Manager, anéis de atualização e relatório de conformidade
-- [ ] **Lab 11 — Identidade híbrida:** Microsoft Entra Connect (sincronização de senha), MFA e acesso condicional
-- [ ] **Lab 12 — Intune:** registro do CL01, perfil de conformidade, BitLocker e implantação de aplicativos
-- [ ] **Lab 13 — PKI:** AD CS com autoridade certificadora corporativa e autoenrollment via GPO
-- [ ] **Lab 14 — Alta disponibilidade:** segundo DC (DC02), papéis FSMO e teste de falha
-- [ ] **Lab 15 — Hardening:** delegação de permissões, LAPS e modelo de camadas (tiering) para contas administrativas
+- [ ] Atualizações: WSUS ou Azure Update Manager, grupos de atualização e relatório de conformidade
+- [ ] Identidade híbrida: Entra Connect com sincronização de senha, MFA e acesso condicional
+- [ ] Intune: registro do CL01, política de conformidade, BitLocker e instalação de aplicativos
+- [ ] Certificados: AD CS com autoridade certificadora interna e emissão automática por GPO
+- [ ] Segundo DC: DC02, transferência dos papéis FSMO e teste de queda do DC01
+- [ ] Hardening: LAPS, delegação de permissões e separação das contas administrativas
 
-## Certificações no radar
+## Certificações que quero tirar
 
-- [ ] AZ-900 — Microsoft Azure Fundamentals
-- [ ] MS-900 — Microsoft 365 Fundamentals
-- [ ] Fortinet Certified Associate (FCA)
-- [ ] AZ-800 — Windows Server Hybrid Administrator
+- [ ] AZ-900 (Azure Fundamentals)
+- [ ] MS-900 (Microsoft 365 Fundamentals)
+- [ ] Fortinet Certified Associate
+- [ ] AZ-800 (Windows Server Hybrid Administrator)

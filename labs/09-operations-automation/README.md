@@ -1,40 +1,63 @@
-# Lab 09 — Automação da operação
+# Lab 09 - Automação do dia a dia
 
-Transforma tarefas repetitivas do dia a dia em scripts padronizados, auditáveis e seguros de executar (todos aceitam `-WhatIf`).
+Scripts para tarefas que se repetem toda semana e que, feitas à mão, acabam esquecidas ou feitas pela metade. Todos aceitam `-WhatIf`.
 
-## Scripts
+## Relatório de saúde do AD (`Get-LabADHealthReport.ps1`)
 
-| Script | Problema que resolve | Destaques |
-| --- | --- | --- |
-| `Get-LabADHealthReport.ps1` | Checagem diária manual do DC | Serviços críticos, replicação, disco, certificados vencendo, contas bloqueadas, senhas que nunca expiram e contas inativas. Gera relatório HTML com cores; código de saída 2 = crítico, 1 = alerta |
-| `Invoke-LabUserOffboarding.ps1` | Desligamento de colaborador feito "na mão" e esquecido pela metade | Exporta os grupos antes de remover (auditoria), desativa, troca a senha por uma aleatória de 32 caracteres, tira de todos os grupos, registra o chamado na descrição e move para `Desativados` |
-| `Get-LabStaleAccount.ps1` | Contas esquecidas são porta de entrada para ataques | Lista usuários e computadores inativos há mais de N dias, com carência para contas novas; com `-Disable`, desativa e move (revisar antes) |
+Uma checagem diária do DC que gera um relatório HTML colorido (verde, amarelo e vermelho):
+
+- serviços essenciais rodando (NTDS, DNS, Netlogon, KDC, W32Time, DFSR);
+- replicação do AD sem falhas;
+- espaço livre em disco;
+- certificados vencendo nos próximos 30 dias;
+- contas bloqueadas, contas com senha que nunca expira e usuários sem logon há mais de 90 dias.
+
+O script termina com código 2 se algo estiver crítico e 1 se houver alerta. Assim, dá para usar numa tarefa agendada ou plugar no Zabbix.
+
+## Desligamento de colaborador (`Invoke-LabUserOffboarding.ps1`)
+
+Quando alguém sai da empresa, o script faz tudo na ordem certa:
+
+1. Salva num CSV os grupos que a pessoa tinha, para auditoria ou para devolver o acesso se foi engano.
+2. Desativa a conta.
+3. Troca a senha por uma aleatória, que ninguém conhece.
+4. Remove a conta de todos os grupos.
+5. Anota na descrição da conta a data e o número do chamado.
+6. Move a conta para a OU `Desativados`.
+
+O número do chamado é obrigatório (formato `CHG-1042`), para tudo ficar rastreável.
+
+## Contas inativas (`Get-LabStaleAccount.ps1`)
+
+Lista usuários e computadores sem logon há mais de N dias (90 por padrão). Conta criada há pouco tempo e que ainda não fez logon fica de fora. Com `-Disable`, desativa as contas e move para `Desativados`, mas a ideia é sempre revisar a lista antes.
+
+Conta esquecida é uma porta de entrada comum em ataques, e limpar isso de tempos em tempos é uma higiene básica do AD.
 
 ## Exemplos
 
 ```powershell
-# Relatório diário como tarefa agendada
-.\Get-LabADHealthReport.ps1 -ReportPath \\FS01\TI$\relatorios\ad-health.html
+# relatório diário
+.\Get-LabADHealthReport.ps1 -ReportPath \\FS01\TI$\relatorios\saude-ad.html
 
-# Desligamento com número do chamado (simulação primeiro)
+# desligamento: simula primeiro, depois executa
 .\Invoke-LabUserOffboarding.ps1 -SamAccountName diego.araujo -Ticket CHG-1042 -WhatIf
 .\Invoke-LabUserOffboarding.ps1 -SamAccountName diego.araujo -Ticket CHG-1042
 
-# Higiene de contas
+# contas inativas
 .\Get-LabStaleAccount.ps1 -DaysInactive 90 | Export-Csv inativos.csv -NoTypeInformation
 ```
 
-### Agendar o relatório diário
+### Agendar o relatório
 
 ```powershell
 $action  = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -File C:\Labs\labs\09-operations-automation\Get-LabADHealthReport.ps1'
 $trigger = New-ScheduledTaskTrigger -Daily -At 7am
-# No DC, a conta SYSTEM usa a conta de computador do DC, que tem leitura no AD; nenhuma senha fica salva
-Register-ScheduledTask -TaskName 'AD Health Report' -Action $action -Trigger $trigger -User 'NT AUTHORITY\SYSTEM' -RunLevel Highest
+# no DC, a conta SYSTEM consegue ler o AD, então não precisa salvar senha de nenhuma conta
+Register-ScheduledTask -TaskName 'Relatorio de saude do AD' -Action $action -Trigger $trigger -User 'NT AUTHORITY\SYSTEM' -RunLevel Highest
 ```
 
-## Validação
+## Checklist
 
-- [ ] Relatório HTML gerado no DC01, com status coloridos
-- [ ] Desligamento de teste: conta desativada em `Desativados`, CSV de grupos salvo, log gravado
-- [ ] `Get-LabStaleAccount.ps1 -Disable -WhatIf` lista as ações sem executá-las
+- [ ] O relatório HTML é gerado no DC01 com as cores certas
+- [ ] Desligamento de teste: conta em `Desativados`, CSV de grupos salvo e log gravado
+- [ ] `Get-LabStaleAccount.ps1 -Disable -WhatIf` mostra o que faria, sem alterar nada

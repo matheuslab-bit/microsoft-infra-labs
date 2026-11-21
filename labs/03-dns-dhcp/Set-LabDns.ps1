@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Configures DNS on the domain controller: forwarders, an AD-integrated reverse lookup zone, scavenging and static records.
+    Configures DNS on the DC: forwarders, reverse zone, scavenging and records for the servers.
 .EXAMPLE
     .\Set-LabDns.ps1 -WhatIf
 #>
@@ -29,7 +29,7 @@ if (-not (Get-DnsServerZone -Name $reverseZone -ErrorAction SilentlyContinue) -a
     Write-LabLog -Message "Reverse zone created: $reverseZone"
 }
 
-# Scavenging removes stale dynamic records left by DHCP clients (7-day no-refresh + 7-day refresh).
+# clean up old records left by DHCP clients (7 days no-refresh + 7 days refresh)
 if ($PSCmdlet.ShouldProcess('DNS Server', 'Enable aging and scavenging (7d/7d)')) {
     Set-DnsServerScavenging -ScavengingState $true -ScavengingInterval 7.00:00:00 -ApplyOnAllZones `
         -NoRefreshInterval 7.00:00:00 -RefreshInterval 7.00:00:00

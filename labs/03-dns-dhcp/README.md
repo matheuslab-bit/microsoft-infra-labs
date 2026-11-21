@@ -1,30 +1,27 @@
-# Lab 03 — DNS e DHCP
+# Lab 03 - DNS e DHCP
 
-Completa os serviços de rede do domínio: resolução de nomes interna e externa e distribuição automática de IP às estações.
+Com o domínio criado, faltam os dois serviços que fazem a rede funcionar sozinha: o DNS resolve os nomes e o DHCP entrega IP para as estações.
 
-## DNS
+## DNS (`Set-LabDns.ps1`)
 
-| Configuração | Valor | Por quê |
-| --- | --- | --- |
-| Zona direta | `corp.lab.internal` (integrada ao AD) | Replicação segura junto com o AD |
-| Zona reversa | `0.50.10.in-addr.arpa` | PTR para troubleshooting (`nslookup` por IP) e logs legíveis |
-| Atualização dinâmica | Somente segura | Só computadores do domínio registram nomes |
-| Encaminhadores | `1.1.1.1`, `8.8.8.8` | Resolução de nomes externos |
-| Aging/Scavenging | 7 + 7 dias | Remove registros antigos deixados por clientes DHCP |
-| Registros fixos | A + PTR de DC01, FS01, MON01 | Servidores com IP estático |
+- **Encaminhadores** para `1.1.1.1` e `8.8.8.8`, para resolver nomes da internet.
+- **Zona reversa** (`0.50.10.in-addr.arpa`) integrada ao AD. Ajuda muito no troubleshooting: dá para fazer `nslookup` pelo IP e ver o nome da máquina.
+- **Limpeza de registros antigos** (aging e scavenging, 7 + 7 dias). Sem isso, o DNS acumula registros de máquinas que nem existem mais.
+- **Registros fixos** (A e PTR) para DC01, FS01 e MON01, que têm IP estático.
+- **Atualização dinâmica só segura:** apenas máquinas do domínio conseguem registrar nomes.
 
-## DHCP
+## DHCP (`Set-LabDhcp.ps1`)
 
-| Configuração | Valor |
-| --- | --- |
-| Escopo | `LAB-Estacoes` · `10.50.0.100–200` · lease de 8 h |
-| Opções | Gateway `10.50.0.1`, DNS `10.50.0.10`, domínio `corp.lab.internal` |
-| Integração com DNS | O DHCP registra e remove os registros A dos clientes |
-| Autorização | Servidor autorizado no AD (evita servidor DHCP "pirata") |
+- Escopo `LAB-Estacoes`, de `10.50.0.100` a `10.50.0.200`, com lease de 8 horas.
+- Entrega gateway `10.50.0.1`, DNS `10.50.0.10` e o sufixo `corp.lab.internal`.
+- O servidor é autorizado no AD. Isso impede que outro servidor DHCP qualquer comece a distribuir IP na rede.
+- O próprio DHCP cria o registro DNS da estação e apaga quando o lease vence.
 
-**Validação antes de aplicar:** o script recusa um escopo fora da sub-rede ou sobreposto a um IP fixo de servidor, usando as funções de cálculo IPv4 do módulo `InfraLab`, que têm testes unitários.
+Antes de alterar qualquer coisa, o script confere se a faixa do escopo está dentro da sub-rede e se não pega o IP fixo de algum servidor. Se pegar, ele para e avisa. Essas contas de IP ficam no módulo `InfraLab` e têm testes automatizados.
 
-## Como executar
+## Como rodar
+
+No DC01:
 
 ```powershell
 .\Set-LabDns.ps1 -WhatIf
@@ -32,8 +29,13 @@ Completa os serviços de rede do domínio: resolução de nomes interna e extern
 .\Set-LabDhcp.ps1
 ```
 
-## Validação
+## Cuidados
+
+- Se o servidor DHCP não estiver autorizado no AD, o serviço sobe, mas não entrega IP. É um erro clássico.
+- Reserve os IPs fixos (servidores, impressoras) fora da faixa do escopo, ou crie exclusões.
+
+## Checklist
 
 - [ ] `nslookup fs01` e `nslookup 10.50.0.20` respondem pelo DC01
-- [ ] CL01 recebe IP no intervalo `.100–.200` com DNS `10.50.0.10` (`ipconfig /all`)
-- [ ] Registro A do CL01 aparece na zona após o lease
+- [ ] O CL01 recebe IP entre `.100` e `.200` com DNS `10.50.0.10` (`ipconfig /all`)
+- [ ] O registro do CL01 aparece na zona DNS depois que ele pega IP

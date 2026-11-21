@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Installs and authorizes the DHCP Server role, then creates the workstation scope with router, DNS and domain options.
+    Installs and authorizes DHCP on the DC and creates the workstation scope.
 .DESCRIPTION
-    Validates the scope against the lab network before touching the server: the range must sit inside the subnet
-    and must not overlap any static server address defined in config/lab.psd1.
+    Before changing anything, checks that the scope is inside the lab subnet and does not include
+    any server's static IP. Stops with an error if it does.
 .EXAMPLE
     .\Set-LabDhcp.ps1 -WhatIf
 #>
@@ -38,7 +38,7 @@ if ($PSCmdlet.ShouldProcess($dcFqdn, 'Install DHCP role and authorize in Active 
     if (-not (Get-DhcpServerInDC | Where-Object { $_.DnsName -eq $dcFqdn })) {
         Add-DhcpServerInDC -DnsName $dcFqdn -IPAddress $dc.IPAddress
     }
-    # Clears the 'configuration required' flag in Server Manager.
+    # removes the 'configuration required' warning in Server Manager
     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ServerManager\Roles\12' -Name ConfigurationState -Value 2
     Write-LabLog -Message "DHCP authorized on $dcFqdn."
 }
@@ -49,7 +49,7 @@ if (-not (Get-DhcpServerv4Scope -ScopeId $subnet.Network -ErrorAction SilentlyCo
         -SubnetMask $subnet.SubnetMask -LeaseDuration ([timespan]$dhcp.LeaseDuration) -State Active
     Set-DhcpServerv4OptionValue -ScopeId $subnet.Network -Router $dhcp.Router -DnsServer $dhcp.DnsServers `
         -DnsDomain $config.Domain.Fqdn
-    # Clients register A records through the DHCP server, which also removes them when the lease expires.
+    # DHCP registers the client in DNS and removes the record when the lease expires
     Set-DhcpServerv4DnsSetting -ScopeId $subnet.Network -DynamicUpdates Always -DeleteDnsRRonLeaseExpiry $true
     Write-LabLog -Message "Scope '$($dhcp.ScopeName)' created and activated."
 }

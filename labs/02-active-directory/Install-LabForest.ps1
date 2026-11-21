@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Prepares DC01 (static IP, hostname) and promotes it to the first domain controller of a new forest with integrated DNS.
+    Sets up DC01 and promotes it to the first domain controller of a new forest.
 .DESCRIPTION
-    Phase 'Prepare' sets the static IP and renames the server (reboot required).
-    Phase 'Promote' installs AD DS and creates the forest. The DSRM password is requested securely and never stored.
+    -Phase Prepare: static IP, DNS pointing to itself and rename to DC01 (restarts the server).
+    -Phase Promote: installs AD DS and creates the forest with DNS. The DSRM password is typed at run time.
 .EXAMPLE
     .\Install-LabForest.ps1 -Phase Prepare
 .EXAMPLE
@@ -28,7 +28,7 @@ if ($Phase -eq 'Prepare') {
             Remove-NetIPAddress -Confirm:$false -ErrorAction SilentlyContinue
         New-NetIPAddress -InterfaceAlias $InterfaceAlias -IPAddress $dc.IPAddress `
             -PrefixLength $config.Network.PrefixLength -DefaultGateway $config.Network.Gateway | Out-Null
-        # A DC points to itself (loopback) for DNS once promoted.
+        # after promotion the DC uses its own DNS
         Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses '127.0.0.1'
         Write-LabLog -Message "Static IP $($dc.IPAddress) configured."
     }
