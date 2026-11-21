@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Finds user and computer accounts inactive for more than N days and, with -Disable, disables them and moves them to OU Desativados.
+    Lists users and computers with no logon for N days. With -Disable, disables them and moves them to Desativados.
 .DESCRIPTION
-    Uses lastLogonTimestamp (replicated, accurate to about 14 days). Accounts created recently that never
-    logged on are ignored during a grace period. Always review the report before running with -Disable.
+    Uses lastLogonTimestamp (accurate to about 14 days). New accounts that never logged on are skipped
+    during a grace period. Review the list before using -Disable.
 .EXAMPLE
     .\Get-LabStaleAccount.ps1 -DaysInactive 90 | Export-Csv stale.csv -NoTypeInformation
 .EXAMPLE

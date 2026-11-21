@@ -1,13 +1,10 @@
 <#
 .SYNOPSIS
-    Creates departmental SMB shares with NTFS permissions granted through AGDLP domain local groups and access-based enumeration.
+    Creates the department shares with NTFS permissions given through groups (AGDLP).
 .DESCRIPTION
-    For each share in config/lab.psd1:
-      1. Creates DL_Share_<Name>_R (read) and DL_Share_<Name>_M (modify) domain local groups in Grupos/Recursos.
-      2. Nests GG_<Department> into the modify group (or Domain Users for 'ALL').
-      3. Breaks NTFS inheritance and grants: SYSTEM + Administrators Full, DL_M Modify, DL_R Read & Execute.
-      4. Publishes the SMB share (share permission: Authenticated Users Change; NTFS is the real control)
-         with access-based enumeration, so users only see folders they can open.
+    For each share: creates DL_Share_<Name>_R and _M groups, adds the department group to _M,
+    sets NTFS permissions without inheritance and publishes the share with access-based enumeration
+    (users only see folders they can open).
 .EXAMPLE
     .\New-LabFileShare.ps1 -WhatIf
 #>

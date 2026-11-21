@@ -1,10 +1,9 @@
 <#
 .SYNOPSIS
-    Standardized employee offboarding: disables the account, resets the password, removes group memberships, moves it to OU Desativados and keeps an audit trail.
+    Offboards a user: disables the account, resets the password, removes groups and moves it to Desativados.
 .DESCRIPTION
-    Replaces a manual checklist that is easy to get wrong. Before removing anything, the current group
-    memberships are exported to CSV so access can be restored or audited later. The ticket number is
-    written to the account description.
+    Saves the user's groups to a CSV before removing them, and writes the date and ticket number
+    in the account description.
 .EXAMPLE
     .\Invoke-LabUserOffboarding.ps1 -SamAccountName diego.araujo -Ticket CHG-1042 -WhatIf
 #>
@@ -35,7 +34,7 @@ foreach ($sam in $SamAccountName) {
         Export-Csv -Path (Join-Path -Path $AuditPath -ChildPath "$sam`_$Ticket`_groups.csv") -NoTypeInformation -Encoding UTF8
 
     Disable-ADAccount -Identity $user
-    # Random 32-character password that nobody knows, so cached credentials stop working too.
+    # random password that nobody knows
     $bytes = New-Object -TypeName byte[] -ArgumentList 24
     [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
     $random = ConvertTo-SecureString -String ([Convert]::ToBase64String($bytes)) -AsPlainText -Force

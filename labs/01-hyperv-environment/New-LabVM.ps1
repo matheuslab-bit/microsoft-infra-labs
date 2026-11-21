@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Creates the lab virtual machines defined in config/lab.psd1 (Generation 2, Secure Boot, vTPM, dynamic memory).
+    Creates the lab VMs listed in config/lab.psd1.
 .DESCRIPTION
-    For each VM: creates a dynamically expanding VHDX, attaches the installation ISO, enables Secure Boot
-    (Microsoft UEFI CA template for Linux guests), adds a virtual TPM for Windows guests, sets production
-    checkpoints and boots from DVD. Existing VMs are skipped.
+    Generation 2 VMs with Secure Boot, dynamic memory and a dynamic VHDX. Windows VMs also get a virtual TPM.
+    Linux VMs use the Microsoft UEFI CA template so they can boot with Secure Boot on.
+    VMs that already exist are skipped.
 .EXAMPLE
     .\New-LabVM.ps1 -Name DC01,CL01 -WhatIf
 #>

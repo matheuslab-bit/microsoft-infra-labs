@@ -1,10 +1,9 @@
 <#
 .SYNOPSIS
-    Silently installs Zabbix Agent 2 on a Windows server, deploys the custom AD/backup items and restricts the agent port to the Zabbix server.
+    Installs Zabbix Agent 2, copies the custom items and opens port 10050 only for the Zabbix server.
 .DESCRIPTION
-    Download the Zabbix Agent 2 (7.0 LTS) MSI from zabbix.com and pass its path. The agent runs in passive and
-    active mode, with HostMetadata 'windows-lab' so an auto-registration action can link the right template.
-    Windows Firewall only allows TCP 10050 from the Zabbix server address.
+    Download the Agent 2 MSI (7.0 LTS) from zabbix.com first. The agent sends HostMetadata 'windows-lab',
+    so an autoregistration action in Zabbix can add the host with the right template.
 .EXAMPLE
     .\Install-LabZabbixAgent.ps1 -MsiPath C:\Temp\zabbix_agent2-7.0-windows-amd64-openssl.msi -WhatIf
 #>

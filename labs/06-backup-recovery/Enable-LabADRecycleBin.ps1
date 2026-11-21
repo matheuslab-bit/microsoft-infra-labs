@@ -1,11 +1,9 @@
 <#
 .SYNOPSIS
-    Enables the Active Directory Recycle Bin and, optionally, runs a delete-and-restore drill with a disposable test user.
+    Turns on the AD Recycle Bin and can run a delete-and-restore test with a temporary user.
 .DESCRIPTION
-    With the Recycle Bin enabled, deleted objects keep all attributes and group memberships and can be restored
-    online with Restore-ADObject, without an authoritative restore from backup. Enabling it is irreversible.
-.EXAMPLE
-    .\Enable-LabADRecycleBin.ps1 -WhatIf
+    With the Recycle Bin on, a deleted user comes back with its groups using Restore-ADObject,
+    without restoring a backup. Turning it on cannot be undone.
 .EXAMPLE
     .\Enable-LabADRecycleBin.ps1 -RunDrill
 #>

@@ -1,9 +1,8 @@
 <#
 .SYNOPSIS
-    Daily health check for a domain controller: critical services, replication, disk space, certificates and account hygiene, exported as an HTML report.
+    Daily DC check: services, replication, disk, certificates and account hygiene, saved as HTML.
 .DESCRIPTION
-    Each check returns OK, WARNING or CRITICAL. The script exits with code 2 when any check is CRITICAL and
-    1 for WARNING, so it can run as a scheduled task or be called by monitoring.
+    Each item is OK, WARNING or CRITICAL. Exit code 2 if anything is critical, 1 if there is a warning.
 .EXAMPLE
     .\Get-LabADHealthReport.ps1 -ReportPath C:\LabLogs\ad-health.html
 #>

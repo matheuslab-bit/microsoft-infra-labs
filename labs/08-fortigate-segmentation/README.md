@@ -1,48 +1,48 @@
-# Lab 08 — Segmentação de rede com FortiGate e VLANs
+# Lab 08 - FortiGate e VLANs
 
-Evolui o lab de rede plana para um desenho segmentado, como numa empresa: servidores, estações e gerência em VLANs separadas, com o FortiGate controlando o tráfego entre elas.
+Nos labs anteriores a rede é plana: tudo na mesma faixa. Numa empresa isso é arriscado, porque um vírus numa estação enxerga todos os servidores. Neste lab separo a rede em VLANs e uso um FortiGate para controlar o que pode falar com o quê.
 
 ## Desenho
 
-```mermaid
-flowchart TB
-    WAN(("Internet")) --- P1["port1 · WAN"]
-    subgraph FGT["FortiGate-VM"]
-      P1
-      P2["port2 · trunk 802.1Q"]
-    end
-    P2 --- V10["VLAN 10 · Servidores<br/>10.50.10.0/24 · DC01, FS01"]
-    P2 --- V20["VLAN 20 · Estações<br/>10.50.20.0/24 · DHCP relay → DC01"]
-    P2 --- V99["VLAN 99 · Gerência<br/>10.50.99.0/24 · único acesso admin"]
+```text
+Internet
+   │
+port1 (WAN)
+FortiGate-VM
+port2 (trunk 802.1Q)
+   ├── VLAN 10  Servidores  10.50.10.0/24  (DC01, FS01)
+   ├── VLAN 20  Estações    10.50.20.0/24  (DHCP via relay para o DC01)
+   └── VLAN 99  Gerência    10.50.99.0/24  (único lugar de onde se administra o firewall)
 ```
 
-## Matriz de acesso
+## Regras entre as redes
 
-| # | Origem → Destino | Serviços | Observação |
+| # | De → Para | Liberado | Por quê |
 | --- | --- | --- | --- |
-| 10 | Estações → DC01 | DNS, Kerberos, LDAP, NTP, SMB, RPC | Somente o necessário para logon e GPO |
-| 20 | Estações → FS01 | SMB 445 | Acesso a arquivos |
-| 30 | Estações → Internet | HTTP, HTTPS, DNS | NAT + filtro web + antivírus |
+| 10 | Estações → DC01 | DNS, Kerberos, LDAP, NTP, SMB, RPC | O mínimo para logon e GPO funcionarem |
+| 20 | Estações → FS01 | SMB (445) | Acesso às pastas |
+| 30 | Estações → Internet | HTTP, HTTPS, DNS | Com NAT, filtro web e antivírus |
 | 40 | Servidores → Internet | HTTP, HTTPS, DNS, NTP | Atualizações |
 | 50 | Gerência → todas | Tudo | Administração |
-| 0 | Qualquer outro | — | **Negado e registrado em log** (deny implícito) |
+| - | Qualquer outra coisa | Bloqueado | E registrado no log |
 
-## Boas práticas aplicadas
+Estação não fala com estação, e estação não acessa a gerência dos servidores nem do firewall. Se uma máquina for comprometida, o estrago fica contido na VLAN dela.
 
-- **Menor privilégio entre VLANs:** estação não fala com estação nem acessa porta de gerência de servidor.
-- **Administração só pela VLAN 99:** `trusthost` no usuário admin, HTTPS em porta alternativa e bloqueio após 3 tentativas.
-- **DHCP relay:** um único servidor DHCP (DC01) atende várias VLANs.
-- **Log de tudo,** inclusive do deny implícito, para troubleshooting e auditoria.
-- Objetos e grupos de serviço com nomes padronizados (`net-`, `host-`, `grp-`).
+## Outros cuidados na configuração
+
+- O acesso administrativo ao FortiGate só é aceito a partir da VLAN 99 (`trusthost`), em porta HTTPS alternativa, com bloqueio depois de 3 senhas erradas.
+- Um único servidor DHCP (o DC01) atende as estações de outra VLAN através do DHCP relay do FortiGate.
+- Tudo é registrado em log, inclusive o tráfego bloqueado pela regra implícita. Isso ajuda muito na hora do troubleshooting ("é o firewall ou não é?").
+- Os objetos seguem um padrão de nome: `net-` para redes, `host-` para máquinas e `grp-` para grupos de serviço.
 
 ## Como usar
 
-1. Importar a FortiGate-VM no Hyper-V (a licença de avaliação permanente está disponível no portal da Fortinet).
-2. Colar o [`fortigate-baseline.conf`](fortigate-baseline.conf) por seções na CLI.
-3. Adicionar as VLANs 10, 20 e 99 aos adaptadores das VMs: `Set-VMNetworkAdapterVlan -VMName CL01 -Access -VlanId 20`.
+1. Importar a FortiGate-VM no Hyper-V. A Fortinet oferece uma licença de avaliação permanente no portal deles.
+2. Colar o [`fortigate-baseline.conf`](fortigate-baseline.conf) na CLI, por partes.
+3. Colocar cada VM na VLAN certa, por exemplo: `Set-VMNetworkAdapterVlan -VMName CL01 -Access -VlanId 20`.
 
-## Validação
+## Checklist
 
-- [ ] CL01 (VLAN 20) recebe IP via relay e faz logon no domínio
-- [ ] CL01 **não** acessa a interface HTTPS do FortiGate
-- [ ] O log mostra o tráfego negado entre VLANs no deny implícito
+- [ ] O CL01, na VLAN 20, pega IP pelo relay e faz logon no domínio
+- [ ] O CL01 não consegue abrir a página de administração do FortiGate
+- [ ] O log mostra o tráfego bloqueado entre as VLANs

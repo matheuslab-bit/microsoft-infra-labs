@@ -1,12 +1,8 @@
-# Lab 02 — Active Directory Domain Services
+# Lab 02 - Active Directory
 
-Cria a floresta `corp.lab.internal`, uma estrutura de OUs pensada para GPO e a carga de usuários em massa, com auditoria.
+Aqui o DC01 vira o primeiro controlador de domínio de `corp.lab.internal`, ganha uma estrutura de OUs e recebe os usuários a partir de uma planilha CSV.
 
-## Objetivo
-
-- Promover o **DC01** a primeiro controlador de domínio, com DNS integrado ao AD.
-- Montar uma **estrutura de OUs em camadas**: usuários, computadores e grupos nunca se misturam.
-- Criar usuários a partir de CSV, seguindo **AGDLP** (contas → grupos globais → grupos de domínio local → permissão).
+É a parte que eu mais fazia na prática: no contact center, criar e organizar contas no AD era rotina diária. A ideia é fazer do jeito que eu gostaria de encontrar um AD organizado.
 
 ## Estrutura de OUs
 
@@ -14,36 +10,53 @@ Cria a floresta `corp.lab.internal`, uma estrutura de OUs pensada para GPO e a c
 corp.lab.internal
 └── CORP
     ├── Usuarios
-    │   ├── TI · Financeiro · Qualidade · Producao · RH
+    │   └── TI, Financeiro, Qualidade, Producao, RH
     ├── Computadores
-    │   ├── Estacoes      ← destino padrão de novos computadores (redircmp)
+    │   ├── Estacoes
     │   └── Servidores
     ├── Grupos
-    │   ├── Seguranca     ← GG_<Departamento>
-    │   └── Recursos      ← DL_<Recurso>_<R|M> (Lab 05)
+    │   ├── Seguranca   (GG_<departamento>)
+    │   └── Recursos    (grupos de permissão das pastas, Lab 05)
     ├── Contas-de-Servico
-    └── Desativados       ← contas desligadas (Lab 09)
+    └── Desativados     (contas de quem saiu da empresa, Lab 09)
 ```
+
+Usuários, computadores e grupos ficam em OUs separadas. Assim dá para aplicar uma GPO só nas estações, ou só num departamento, sem efeito colateral.
 
 ## Scripts
 
-| Script | O que faz |
-| --- | --- |
-| `Install-LabForest.ps1 -Phase Prepare` | IP estático, DNS em loopback e renomeia para DC01 |
-| `Install-LabForest.ps1 -Phase Promote` | Instala o AD DS e cria a floresta; a senha DSRM é pedida de forma segura e nunca gravada |
-| `New-LabOUStructure.ps1` | Cria as OUs protegidas contra exclusão acidental e redireciona o container padrão de computadores |
-| `Import-LabUsers.ps1` | Cria grupos `GG_<Depto>` e usuários `nome.sobrenome` sem acento; senha inicial com troca obrigatória; gera relatório CSV |
+- `Install-LabForest.ps1 -Phase Prepare`: define o IP fixo, aponta o DNS para o próprio servidor e renomeia para DC01. Pede reinício.
+- `Install-LabForest.ps1 -Phase Promote`: instala o AD DS e cria a floresta. A senha do modo de restauração (DSRM) é digitada na hora e não fica salva em lugar nenhum.
+- `New-LabOUStructure.ps1`: cria as OUs com proteção contra exclusão acidental.
+- `Import-LabUsers.ps1`: lê o [`users.csv`](../../data/users.csv), cria os grupos `GG_<departamento>`, cria cada usuário na OU do departamento e gera um CSV com tudo que foi criado.
 
-## Decisões técnicas
+## Detalhes que fazem diferença
 
-- **Domínio `.internal`:** sufixo reservado para uso privado, então não colide com um domínio público.
-- **`redircmp`:** computadores novos caem numa OU com GPO aplicada, em vez do container `Computers`, onde GPO não se aplica.
-- **Nomes de login:** acentos removidos por normalização Unicode e limite de 20 caracteres do `sAMAccountName`; colisões ganham sufixo numérico.
-- **Todos os scripts que alteram o ambiente aceitam `-WhatIf`.**
+- **Login no padrão `nome.sobrenome`, sem acento:** "João Conceição" vira `joao.conceicao`. O script respeita o limite de 20 caracteres do AD e, se o login já existir, acrescenta um número no final.
+- **Senha inicial com troca obrigatória no primeiro logon:** a senha é digitada uma vez, na execução.
+- **Domínio `.internal`:** é um sufixo reservado para redes privadas, então nunca vai conflitar com um domínio da internet.
+- **Novos computadores vão para a OU Estacoes:** por padrão, o Windows coloca computadores novos no container "Computers", onde não dá para vincular GPO. O comando `redircmp` muda esse destino.
 
-## Validação
+## Como rodar
 
-- [ ] `Get-ADDomain`, `dcdiag /q` sem erros
+```powershell
+.\Install-LabForest.ps1 -Phase Prepare
+# depois do reinício
+.\Install-LabForest.ps1 -Phase Promote
+# depois do reinício, já logado no domínio
+.\New-LabOUStructure.ps1
+.\Import-LabUsers.ps1 -WhatIf
+.\Import-LabUsers.ps1
+```
+
+## Cuidados
+
+- O DC precisa usar ele mesmo como DNS. Se a placa de rede apontar para o roteador ou para o 8.8.8.8, o logon e a entrada de máquinas no domínio falham.
+- Antes de promover, confira o nome do servidor. Renomear um DC depois dá bem mais trabalho.
+
+## Checklist
+
+- [ ] `Get-ADDomain` responde e `dcdiag /q` não mostra erros
 - [ ] `Get-ADOrganizationalUnit -Filter *` mostra a árvore acima
-- [ ] 12 usuários criados nas OUs corretas, membros de `GG_<Depto>`
-- [ ] Login no CL01 com um usuário novo pedindo troca de senha
+- [ ] Os 12 usuários estão nas OUs certas e nos grupos `GG_<departamento>`
+- [ ] Logon no CL01 com um usuário novo pede a troca de senha

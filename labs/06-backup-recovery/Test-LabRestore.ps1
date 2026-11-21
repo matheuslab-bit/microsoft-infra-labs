@@ -1,10 +1,9 @@
 <#
 .SYNOPSIS
-    Proves the latest file backup is restorable: restores a random sample to a scratch folder and compares SHA256 hashes with the manifest.
+    Restores a random sample from the latest backup and checks each file's hash.
 .DESCRIPTION
-    A backup that was never restored is only an assumption. This script picks the newest snapshot, restores
-    SampleSize random files (or all of them) to a temporary folder, verifies each hash against _manifest.csv
-    and outputs a pass/fail report. Exit code 1 when any file fails, so it can feed monitoring or a scheduled task.
+    Copies the sample to a temporary folder and compares the SHA256 with the backup manifest.
+    Exits with code 1 if any file does not match, so it can be used in a scheduled task or monitoring.
 .EXAMPLE
     .\Test-LabRestore.ps1 -SampleSize 20 -ReportPath E:\Backups\logs\restore-test.csv
 #>

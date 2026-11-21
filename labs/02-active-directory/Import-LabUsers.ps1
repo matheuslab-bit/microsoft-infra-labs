@@ -1,15 +1,14 @@
 <#
 .SYNOPSIS
-    Bulk-creates users from a CSV, places them in their department OU and adds them to the department global group.
+    Creates users from a CSV file and adds each one to its department group.
 .DESCRIPTION
-    - Logon name 'given.surname' without diacritics (max 20 chars); collisions get a numeric suffix.
-    - Initial password is requested once as SecureString and must be changed at first logon.
-    - Creates GG_<Department> global security groups in OU Grupos/Seguranca (AGDLP: G of AGDLP).
-    - Writes a CSV audit report with every created account.
+    Logon names follow 'name.surname' without accents (max 20 characters). If the name is taken, a number is added.
+    Creates the GG_<Department> groups if needed. The initial password is typed once and must be changed at first logon.
+    Saves a CSV report with the accounts created.
 .EXAMPLE
     .\Import-LabUsers.ps1 -WhatIf
 .EXAMPLE
-    .\Import-LabUsers.ps1 -CsvPath ..\..\data\users.csv -ReportPath C:\LabLogs\users-created.csv
+    .\Import-LabUsers.ps1 -ReportPath C:\LabLogs\users-created.csv
 #>
 #Requires -Modules ActiveDirectory
 [CmdletBinding(SupportsShouldProcess)]

@@ -1,38 +1,44 @@
-# Lab 06 — Backup, restauração e recuperação do AD
+# Lab 06 - Backup e recuperação
 
-Backup só vale se a restauração funciona. Este lab cobre as três camadas: arquivos, estado do sistema do DC e objetos do AD apagados por engano.
+Backup que nunca foi restaurado é só uma suposição. Por isso este lab não para no backup: ele também testa a restauração.
 
-## Estratégia
+## O que entra no backup
 
-| Camada | Ferramenta | Frequência sugerida | Restauração |
-| --- | --- | --- | --- |
-| Arquivos (`D:\Shares`) | Robocopy com ACLs + manifesto SHA256 | Diária | Copiar da pasta do dia; `Test-LabRestore.ps1` comprova a integridade |
-| Estado do sistema do DC (NTDS, SYSVOL, registro) | `wbadmin start systemstatebackup` | Diária | Modo de restauração do AD (DSRM): não autoritativa ou autoritativa |
-| Objetos do AD apagados | Lixeira do AD | Contínua | `Restore-ADObject`, online e com grupos preservados |
-| GPOs | `Backup-LabGpo.ps1` (Lab 04) | Diária | `Restore-GPO` |
+| O quê | Como | Como volto |
+| --- | --- | --- |
+| Arquivos das pastas (`D:\Shares`) | Robocopy, guardando as permissões, numa pasta por data | Copio de volta da pasta do dia |
+| Estado do sistema do DC (banco do AD, SYSVOL, registro) | `wbadmin` | Modo de restauração do AD (DSRM) |
+| Usuário ou grupo apagado por engano | Lixeira do AD | `Restore-ADObject`, sem precisar de backup |
+| GPOs | `Backup-LabGpo.ps1` (Lab 04) | `Restore-GPO` |
 
-Retenção padrão: 14 dias (`config/lab.psd1`). Em produção vale a regra **3-2-1**: 3 cópias, 2 mídias, 1 fora do local.
+A retenção padrão é de 14 dias e pode ser alterada em `config/lab.psd1`. Num ambiente de produção eu seguiria a regra 3-2-1: três cópias, em dois tipos de mídia, sendo uma fora da empresa.
 
 ## Scripts
 
-| Script | O que faz |
-| --- | --- |
-| `Invoke-LabBackup.ps1` | Cópia versionada por data, preserva permissões NTFS, gera manifesto SHA256, faz o backup de estado do sistema (opcional) e apaga snapshots vencidos. Códigos de saída do Robocopy ≥ 8 interrompem como falha |
-| `Test-LabRestore.ps1` | Restaura uma amostra aleatória do último snapshot e compara os hashes; retorna código 1 se algum arquivo falhar, para alimentar monitoramento ou tarefa agendada |
-| `Enable-LabADRecycleBin.ps1 -RunDrill` | Habilita a Lixeira do AD e faz um simulado: cria, apaga e restaura um usuário de teste, verificando se o grupo foi preservado |
+**`Invoke-LabBackup.ps1`** copia as pastas para `E:\Backups\files\<data_hora>` mantendo as permissões NTFS. Para cada cópia, gera um arquivo `_manifest.csv` com o hash SHA256 de cada arquivo. Com `-IncludeSystemState`, também faz o backup do estado do sistema do DC. No fim, apaga as cópias mais antigas que a retenção. Se o Robocopy retornar erro (código 8 ou maior), o script para e registra no log.
 
-## Como executar
+**`Test-LabRestore.ps1`** pega a cópia mais recente, restaura uma amostra aleatória de arquivos numa pasta temporária e compara o hash de cada um com o manifesto. Se algum não bater, o script termina com código 1, o que permite usar o resultado numa tarefa agendada ou no monitoramento.
+
+**`Enable-LabADRecycleBin.ps1`** habilita a Lixeira do AD. Com `-RunDrill`, faz um simulado: cria um usuário de teste, coloca num grupo, apaga, restaura e confere se ele voltou com o grupo.
+
+## Como rodar
 
 ```powershell
 .\Invoke-LabBackup.ps1 -WhatIf
 .\Invoke-LabBackup.ps1 -IncludeSystemState -SystemStateTarget 'E:'
-.\Test-LabRestore.ps1 -SampleSize 20 -ReportPath E:\Backups\logs\restore-test.csv
+.\Test-LabRestore.ps1 -SampleSize 20 -ReportPath E:\Backups\logs\teste-restauracao.csv
 .\Enable-LabADRecycleBin.ps1 -RunDrill
 ```
 
-## Validação
+## Cuidados
 
-- [ ] Snapshot criado com `_manifest.csv` e permissões NTFS preservadas
-- [ ] `Test-LabRestore.ps1` com 100% `PASS`
-- [ ] Simulado da Lixeira do AD restaurou o usuário com o grupo `GG_TI`
+- Habilitar a Lixeira do AD não tem volta. Num ambiente real, combine antes com o time.
+- O backup de estado do sistema precisa de um volume próprio para destino; não dá para gravar no mesmo disco do sistema.
+- Sem a Lixeira do AD, recuperar um usuário apagado exige restauração autoritativa a partir de backup, um processo bem mais demorado.
+
+## Checklist
+
+- [ ] A pasta da cópia tem o `_manifest.csv` e as permissões NTFS foram mantidas
+- [ ] `Test-LabRestore.ps1` retorna tudo `PASS`
+- [ ] O simulado da Lixeira do AD trouxe o usuário de volta com o grupo `GG_TI`
 - [ ] `wbadmin get versions` lista o backup de estado do sistema

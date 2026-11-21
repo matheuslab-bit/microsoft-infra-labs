@@ -1,13 +1,11 @@
 <#
 .SYNOPSIS
-    Creates the isolated Hyper-V lab network: an Internal vSwitch, the host gateway IP and a NAT for internet access.
+    Creates the lab network: internal Hyper-V switch, gateway IP on the host and NAT.
 .DESCRIPTION
-    Idempotent: existing objects are detected and left untouched. Values come from config/lab.psd1.
-    Lab VMs reach the internet through the host NAT but are not exposed to the physical network.
+    Values come from config/lab.psd1. Safe to run again: anything that already exists is skipped.
+    VMs get internet through the host NAT and stay off the home network.
 .EXAMPLE
     .\New-LabNetwork.ps1 -WhatIf
-.EXAMPLE
-    .\New-LabNetwork.ps1 -Verbose
 #>
 #Requires -RunAsAdministrator
 [CmdletBinding(SupportsShouldProcess)]

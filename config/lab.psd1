@@ -1,5 +1,5 @@
 @{
-    # Single source of truth for the home lab. Every script reads this file.
+    # Lab settings. Every script reads this file.
     Lab = @{
         Name   = 'CORP-LAB'
         VMPath = 'C:\HyperV\Lab'
@@ -38,7 +38,7 @@
         DnsServers    = @('10.50.0.10')
     }
 
-    # Tiered OU layout: users, computers and groups are never mixed, so GPOs can target each one.
+    # users, computers and groups in separate OUs, so each one can get its own GPO
     OrganizationalUnits = @(
         'Usuarios'
         'Computadores'
@@ -53,7 +53,7 @@
 
     Departments = @('TI', 'Financeiro', 'Qualidade', 'Producao', 'RH')
 
-    # AGDLP: users -> Global groups (department) -> Domain Local groups (resource permission).
+    # AGDLP: user -> department group (GG_) -> share permission group (DL_)
     Shares = @(
         @{ Name = 'Financeiro'; Path = 'D:\Shares\Financeiro'; Department = 'Financeiro' }
         @{ Name = 'Qualidade';  Path = 'D:\Shares\Qualidade';  Department = 'Qualidade' }

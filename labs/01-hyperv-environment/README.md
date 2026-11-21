@@ -1,44 +1,46 @@
-# Lab 01 — Ambiente Hyper-V
+# Lab 01 - Ambiente Hyper-V
 
-Monta o laboratório isolado em que todos os outros labs rodam, usando o Hyper-V do Windows 11 Pro.
+Este é o lab base: cria a rede isolada e as máquinas virtuais que todos os outros labs usam.
 
-## Objetivo
+## O que os scripts fazem
 
-- Criar uma rede interna isolada (`10.50.0.0/24`) com NAT, para as VMs terem internet sem ficar expostas na rede física.
-- Provisionar as VMs a partir de um arquivo de configuração único ([`config/lab.psd1`](../../config/lab.psd1)), como infraestrutura como código.
+`New-LabNetwork.ps1` cria um switch interno no Hyper-V, coloca o IP `10.50.0.1` no host (que vira o gateway das VMs) e configura um NAT. Com isso as VMs saem para a internet, mas ficam fora da minha rede de casa.
 
-## Topologia
+`New-LabVM.ps1` lê a lista de VMs em [`config/lab.psd1`](../../config/lab.psd1) e cria cada uma com o disco, a memória e a ISO certos. VM que já existe é ignorada.
 
-| VM | Função | IP | Recursos |
+| VM | Para que serve | IP | vCPU / RAM / disco |
 | --- | --- | --- | --- |
-| DC01 | Controlador de domínio, DNS, DHCP | 10.50.0.10 | 2 vCPU · 4 GB · 60 GB |
-| FS01 | Servidor de arquivos e backup | 10.50.0.20 | 2 vCPU · 4 GB · 80 GB |
-| MON01 | Zabbix (Ubuntu + Docker) | 10.50.0.30 | 2 vCPU · 4 GB · 40 GB |
-| CL01 | Estação Windows 11 | DHCP | 2 vCPU · 4 GB · 60 GB |
+| DC01 | Domínio, DNS e DHCP | 10.50.0.10 | 2 / 4 GB / 60 GB |
+| FS01 | Arquivos e backup | 10.50.0.20 | 2 / 4 GB / 80 GB |
+| MON01 | Zabbix | 10.50.0.30 | 2 / 4 GB / 40 GB |
+| CL01 | Estação de trabalho | DHCP | 2 / 4 GB / 60 GB |
 
-## Decisões técnicas
+## Por que fiz assim
 
-| Decisão | Motivo |
-| --- | --- |
-| Switch **Internal** + `New-NetNat` | Isola o lab da rede de casa ou da empresa e mantém acesso à internet para atualizações. |
-| VMs **Geração 2** com Secure Boot | Firmware UEFI e proteção contra bootkits; o Linux usa o template *Microsoft UEFI CA*. |
-| **vTPM** nas VMs Windows | Requisito do Windows 11 e base para BitLocker. |
-| Checkpoints **Production** e automáticos desligados | Checkpoints consistentes via VSS, sem consumir disco a cada boot. |
-| VHDX **dinâmico** | Economiza espaço no host de laboratório. |
+- **Switch interno com NAT, e não externo:** o lab tem DHCP e DNS próprios. Num switch externo, o DHCP do lab poderia entregar IP para os aparelhos de casa.
+- **VMs de geração 2 com Secure Boot:** é o padrão atual. Nas VMs Windows também adicionei TPM virtual, que o Windows 11 exige.
+- **Checkpoints do tipo Production e sem checkpoint automático:** o checkpoint fica consistente (usa VSS) e não ocupa disco a cada vez que a VM liga.
+- **Disco dinâmico:** num PC de casa, espaço em disco faz diferença.
 
-## Como executar
+## Como rodar
+
+PowerShell como administrador, com o Hyper-V já habilitado:
 
 ```powershell
-# PowerShell como Administrador, com o Hyper-V habilitado
-.\New-LabNetwork.ps1 -WhatIf     # mostra o que seria feito
+.\New-LabNetwork.ps1 -WhatIf     # só mostra o que faria
 .\New-LabNetwork.ps1
 .\New-LabVM.ps1 -Name DC01,FS01,CL01
 ```
 
-ISOs de avaliação gratuitas: Windows Server 2022 Evaluation e Windows 11 Enterprise Evaluation (Microsoft Evaluation Center) e Ubuntu Server 24.04 LTS.
+As ISOs ficam em `C:\HyperV\ISO`. Uso as versões de avaliação gratuitas do Windows Server 2022 e do Windows 11 Enterprise, além do Ubuntu Server 24.04.
 
-## Validação
+## Cuidados
 
-- [ ] `Get-VMSwitch LabInternal` e `Get-NetNat LabNAT` retornam os objetos
-- [ ] As VMs iniciam pelo DVD e recebem rede
-- [ ] Checkpoint criado e revertido com sucesso em uma VM de teste
+- VM Linux com Secure Boot precisa do template "Microsoft UEFI Certificate Authority", senão não dá boot. O script já trata isso para a MON01.
+- Se o NAT não funcionar, confira se não existe outro `NetNat` usando a mesma faixa: o Windows só aceita um NAT por faixa de IP.
+
+## Checklist
+
+- [ ] `Get-VMSwitch LabInternal` e `Get-NetNat LabNAT` retornam o switch e o NAT
+- [ ] As VMs dão boot pela ISO e acessam a internet
+- [ ] Criar um checkpoint numa VM, alterar algo e reverter

@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Applies the domain password/lockout policy, a stricter fine-grained policy for IT admins and a workstation security baseline GPO.
+    Applies the domain password policy, a stricter policy for IT and the workstation security GPO.
 .DESCRIPTION
-    - Default domain password policy: 12+ characters, 24 history, lockout after 5 attempts for 15 minutes.
-    - Fine-grained password policy (PSO) for GG_TI: 15+ characters, lockout after 3 attempts.
-    - GPO 'LAB - Estacoes - Baseline' linked to OU Estacoes: firewall on for all profiles, SMBv1 disabled,
-      removable storage write blocked, password-protected screen lock after 15 minutes, last user name hidden.
+    Domain: 12+ characters, 24 history, lockout after 5 tries for 15 minutes.
+    GG_TI (fine-grained policy): 15+ characters, lockout after 3 tries.
+    GPO 'LAB - Estacoes - Baseline' on OU Estacoes: firewall on, SMBv1 off, USB storage read-only,
+    screen lock after 15 minutes, last user name hidden at logon.
 .EXAMPLE
     .\New-LabBaselineGpo.ps1 -WhatIf
 #>

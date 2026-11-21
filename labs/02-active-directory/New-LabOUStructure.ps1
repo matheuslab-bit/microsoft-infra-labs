@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Creates the tiered OU structure and one OU per department, protected against accidental deletion.
+    Creates the OU structure, with one OU per department.
 .DESCRIPTION
-    Layout (root OU from config): Usuarios/<Department>, Computadores/Estacoes, Computadores/Servidores,
-    Grupos/Seguranca, Grupos/Recursos, Contas-de-Servico and Desativados. Idempotent.
+    Users, computers and groups get separate OUs so GPOs can target each one.
+    OUs are protected from accidental deletion. Safe to run again.
 .EXAMPLE
     .\New-LabOUStructure.ps1 -WhatIf
 #>
@@ -45,7 +45,7 @@ foreach ($department in $config.Departments) {
     New-LabOU -Name $department -ParentDn "OU=Usuarios,$rootDn" | Out-Null
 }
 
-# Send new computer accounts to Estacoes instead of the default Computers container (no GPOs apply there).
+# new computers go to OU Estacoes instead of the default Computers container (GPOs cannot be linked there)
 if ($PSCmdlet.ShouldProcess($domainDn, 'Redirect default computer container to OU Estacoes')) {
     & redircmp.exe "OU=Estacoes,OU=Computadores,$rootDn" | Out-Null
 }
