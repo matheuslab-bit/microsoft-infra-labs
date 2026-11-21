@@ -1,0 +1,5 @@
+[
+  { "nome": "Google", "url": "https://www.google.com", "statusEsperado": 200, "limiteMs": 1500 },
+  { "nome": "Microsoft 365 (redireciona)", "url": "https://www.office.com", "statusEsperado": 301, "limiteMs": 2000 },
+  { "nome": "Status do GitHub", "url": "https://www.githubstatus.com", "statusEsperado": 200, "limiteMs": 2000 }
+]

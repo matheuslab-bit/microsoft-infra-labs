@@ -1,0 +1,16 @@
+{
+  "name": "automacao-infra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Automações em JavaScript para o dia a dia de infraestrutura: relatório de chamados, certificados vencendo e saúde de serviços.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "chamados": "node src/relatorio-chamados.js dados/chamados-exemplo.csv",
+    "certificados": "node src/verificar-certificados.js www.google.com www.microsoft.com",
+    "servicos": "node src/monitor-servicos.js dados/servicos-exemplo.json"
+  }
+}

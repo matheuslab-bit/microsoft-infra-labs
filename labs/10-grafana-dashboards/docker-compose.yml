@@ -1,0 +1,33 @@
+# Grafana with the Zabbix plugin, on the same Docker network as the Lab 07 Zabbix.
+# Start Lab 07 first, then: cp .env.example .env && docker compose up -d
+name: grafana
+
+services:
+  grafana:
+    image: grafana/grafana-oss:11.3.0
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_INSTALL_PLUGINS: alexanderzobnin-zabbix-app
+      # read by the provisioning files
+      ZABBIX_URL: ${ZABBIX_URL}
+      ZABBIX_USER: ${ZABBIX_USER}
+      ZABBIX_PASSWORD: ${ZABBIX_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning:ro
+      - ./dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - zabbix
+
+volumes:
+  grafana-data:
+
+networks:
+  zabbix:
+    name: zabbix_default
+    external: true

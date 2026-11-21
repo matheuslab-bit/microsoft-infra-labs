@@ -1,0 +1,17 @@
+id,aberto_em,fechado_em,categoria,prioridade,sla_horas,status
+1001,2026-11-02T08:10,2026-11-02T09:05,Acesso e senha,Media,4,Fechado
+1002,2026-11-02T08:40,2026-11-02T15:30,Rede,Alta,4,Fechado
+1003,2026-11-02T10:15,2026-11-02T11:00,Acesso e senha,Baixa,8,Fechado
+1004,2026-11-03T07:55,2026-11-03T08:20,Telefonia,Critica,2,Fechado
+1005,2026-11-03T09:30,2026-11-04T10:00,Servidor,Alta,4,Fechado
+1006,2026-11-03T11:00,2026-11-03T13:10,Impressora,Baixa,8,Fechado
+1007,2026-11-04T08:05,2026-11-04T08:50,Acesso e senha,Media,4,Fechado
+1008,2026-11-04T09:20,2026-11-04T10:40,Telefonia,Alta,4,Fechado
+1009,2026-11-04T14:00,,Servidor,Media,8,Em andamento
+1010,2026-11-05T08:30,2026-11-05T09:10,Rede,Media,4,Fechado
+1011,2026-11-05T10:45,2026-11-05T16:20,"Software, instalacao",Baixa,8,Fechado
+1012,2026-11-05T13:15,2026-11-05T13:55,Telefonia,Critica,2,Fechado
+1013,2026-11-06T08:00,2026-11-06T08:30,Acesso e senha,Media,4,Fechado
+1014,2026-11-06T09:10,2026-11-06T14:00,Rede,Alta,4,Fechado
+1015,2026-11-06T11:30,,Impressora,Baixa,8,Aguardando usuario
+1016,2026-11-06T15:00,2026-11-06T15:25,Telefonia,Media,4,Fechado
