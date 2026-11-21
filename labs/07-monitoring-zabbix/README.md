@@ -45,6 +45,8 @@ Em cada servidor Windows (o MSI do Agent 2 é baixado no site do Zabbix):
 
 O script instala o agente, copia os itens personalizados e libera a porta 10050 no firewall só para o IP do MON01.
 
+Para não criar os itens à mão, importe o template [`template-lab-windows-ad.yaml`](template-lab-windows-ad.yaml) (Data collection > Templates > Import). Ele já traz os três itens personalizados com os gatilhos de alerta: replicação com falha, 10 ou mais contas bloqueadas e backup com mais de 1 dia. Os painéis do Grafana no [Lab 10](../10-grafana-dashboards/README.md) usam esses mesmos itens.
+
 No painel do Zabbix, configuro uma ação de autorregistro (Alerts > Actions > Autoregistration) com a condição "Host metadata contém windows-lab". Assim, todo servidor novo com o agente entra no monitoramento sozinho, já com o template certo.
 
 ## Cuidados

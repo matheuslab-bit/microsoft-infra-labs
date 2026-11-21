@@ -1,6 +1,10 @@
 BeforeDiscovery {
     $repoRoot = Split-Path -Path $PSScriptRoot -Parent
-    $scripts = Get-ChildItem -Path (Join-Path -Path $repoRoot -ChildPath 'labs') -Filter '*.ps1' -Recurse |
+    $scripts = 'labs', 'toolkit' | ForEach-Object { Get-ChildItem -Path (Join-Path -Path $repoRoot -ChildPath $_) -Filter '*.ps1' -Recurse } |
+        ForEach-Object { @{ Name = $_.Name; Path = $_.FullName } }
+    $batchFiles = Get-ChildItem -Path (Join-Path -Path $repoRoot -ChildPath 'toolkit') -Filter '*.bat' -Recurse |
+        ForEach-Object { @{ Name = $_.Name; Path = $_.FullName } }
+    $jsonFiles = Get-ChildItem -Path $repoRoot -Filter '*.json' -Recurse | Where-Object { $_.FullName -notmatch 'node_modules' } |
         ForEach-Object { @{ Name = $_.Name; Path = $_.FullName } }
     # Scripts whose verb changes the environment must support -WhatIf/-Confirm.
     $changingVerbs = 'New', 'Set', 'Install', 'Enable', 'Invoke', 'Import', 'Backup', 'Remove'
@@ -42,6 +46,33 @@ Describe 'State-changing script <Name>' -ForEach $changingScripts {
     It 'declares SupportsShouldProcess (supports -WhatIf)' {
         $binding = (Get-ScriptAst -Path $Path).Ast.ParamBlock.Attributes | Where-Object { $_.TypeName.Name -eq 'CmdletBinding' }
         $binding.NamedArguments.ArgumentName | Should -Contain 'SupportsShouldProcess'
+    }
+}
+
+Describe 'Batch file <Name>' -ForEach $batchFiles {
+    It 'is ASCII-only (cmd.exe reads it with the OEM code page)' {
+        [IO.File]::ReadAllBytes($Path) | Where-Object { $_ -gt 127 } | Should -BeNullOrEmpty
+    }
+    It 'starts with @echo off and uses setlocal' {
+        $content = Get-Content -Path $Path -Raw
+        $content | Should -Match '^@echo off'
+        $content | Should -Match '(?im)^setlocal'
+    }
+}
+
+Describe 'JSON file <Name>' -ForEach $jsonFiles {
+    It 'is valid JSON' {
+        { Get-Content -Path $Path -Raw -Encoding UTF8 | ConvertFrom-Json } | Should -Not -Throw
+    }
+}
+
+Describe 'Grafana dashboard' {
+    It 'uses the provisioned Zabbix datasource in every panel' {
+        $dash = Get-Content -Path (Join-Path -Path $repoRoot -ChildPath 'labs/10-grafana-dashboards/dashboards/infra-visao-geral.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        $dash.panels.Count | Should -BeGreaterThan 0
+        foreach ($panel in $dash.panels) {
+            $panel.datasource.uid | Should -Be 'zabbix' -Because $panel.title
+        }
     }
 }
 

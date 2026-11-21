@@ -12,7 +12,7 @@ Este é o lab base: cria a rede isolada e as máquinas virtuais que todos os out
 | --- | --- | --- | --- |
 | DC01 | Domínio, DNS e DHCP | 10.50.0.10 | 2 / 4 GB / 60 GB |
 | FS01 | Arquivos e backup | 10.50.0.20 | 2 / 4 GB / 80 GB |
-| MON01 | Zabbix | 10.50.0.30 | 2 / 4 GB / 40 GB |
+| MON01 | Zabbix e Grafana | 10.50.0.30 | 2 / 4 GB / 40 GB |
 | CL01 | Estação de trabalho | DHCP | 2 / 4 GB / 60 GB |
 
 ## Por que fiz assim

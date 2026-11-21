@@ -1,4 +1,4 @@
-name: PowerShell CI
+name: CI
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       - name: Analyze scripts and module
         run: |
           # tests/ is excluded: Pester's BeforeAll/It scoping triggers false 'unused variable' warnings.
-          $results = 'labs', 'modules' | ForEach-Object { Invoke-ScriptAnalyzer -Path $_ -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 }
+          $results = 'labs', 'modules', 'toolkit' | ForEach-Object { Invoke-ScriptAnalyzer -Path $_ -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 }
           $results | Format-Table -AutoSize RuleName, Severity, ScriptName, Line, Message
           if ($results) { throw "PSScriptAnalyzer found $($results.Count) issue(s)." }
 
@@ -64,16 +64,47 @@ jobs:
           $config.TestResult.OutputPath = 'test-results.xml'
           Invoke-Pester -Configuration $config
 
-  compose:
-    name: Validate Zabbix docker-compose
+  javascript:
+    name: Tests (Node.js)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: automacao-js
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run node --test
+        run: |
+          node --version
+          npm test
+
+  shell:
+    name: ShellCheck (Linux scripts)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Check out repository
         uses: actions/checkout@v7.0.1
 
+      - name: shellcheck
+        run: shellcheck toolkit/linux/*.sh
+
+  compose:
+    name: Validate docker-compose (Zabbix and Grafana)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        lab: [07-monitoring-zabbix, 10-grafana-dashboards]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
       - name: docker compose config
-        working-directory: labs/07-monitoring-zabbix
+        working-directory: labs/${{ matrix.lab }}
         run: |
           cp .env.example .env
           docker compose config --quiet
