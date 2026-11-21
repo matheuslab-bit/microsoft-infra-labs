@@ -1,0 +1,79 @@
+name: PowerShell CI
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: powershell-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (PSScriptAnalyzer)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Install PSScriptAnalyzer
+        run: Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Scope CurrentUser -Force
+
+      - name: Analyze scripts and module
+        run: |
+          # tests/ is excluded: Pester's BeforeAll/It scoping triggers false 'unused variable' warnings.
+          $results = 'labs', 'modules' | ForEach-Object { Invoke-ScriptAnalyzer -Path $_ -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 }
+          $results | Format-Table -AutoSize RuleName, Severity, ScriptName, Line, Message
+          if ($results) { throw "PSScriptAnalyzer found $($results.Count) issue(s)." }
+
+  test:
+    name: Tests (Pester) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Pester
+        run: Install-Module Pester -RequiredVersion 6.2.0 -Scope CurrentUser -Force -SkipPublisherCheck
+
+      - name: Run tests
+        run: |
+          $config = New-PesterConfiguration
+          $config.Run.Path = './tests'
+          $config.Run.Exit = $true
+          $config.Output.Verbosity = 'Detailed'
+          $config.TestResult.Enabled = $true
+          $config.TestResult.OutputPath = 'test-results.xml'
+          Invoke-Pester -Configuration $config
+
+  compose:
+    name: Validate Zabbix docker-compose
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
+      - name: docker compose config
+        working-directory: labs/07-monitoring-zabbix
+        run: |
+          cp .env.example .env
+          docker compose config --quiet

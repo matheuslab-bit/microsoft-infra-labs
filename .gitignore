@@ -1,0 +1,25 @@
+# Secrets and local environment
+.env
+*.pfx
+*.pem
+*.key
+credentials*.xml
+*secret*
+
+# Lab outputs (reports, logs, backups)
+*.log
+test-results.xml
+reports/
+LabLogs/
+
+# Hyper-V and installation media
+*.vhdx
+*.vhd
+*.avhdx
+*.iso
+
+# Editors and operating system
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
