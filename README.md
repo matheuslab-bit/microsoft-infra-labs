@@ -20,7 +20,7 @@ O ambiente Microsoft de uma empresa, montado do zero num laboratório Hyper-V e 
 Quatro máquinas virtuais numa rede isolada, com saída para a internet pelo host:
 
 ```mermaid
-flowchart LR
+flowchart TB
     internet((Internet)) --- host["Host Windows 11<br/>Hyper-V + NAT"]
     host --- sw["Switch interno LabInternal<br/>10.50.0.0/24"]
     sw --- dc["DC01 · 10.50.0.10<br/>AD, DNS e DHCP"]
