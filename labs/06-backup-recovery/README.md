@@ -1,5 +1,9 @@
 # Lab 06 - Backup e recuperação
 
+> **Em poucas palavras:** Backup é a cópia de segurança. O teste de restauração é provar que essa cópia realmente volta quando alguém precisa dela.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Backup que nunca foi restaurado é só uma suposição. Por isso este lab não para no backup: ele também testa a restauração.
 
 ## O que entra no backup

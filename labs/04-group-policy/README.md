@@ -1,5 +1,9 @@
 # Lab 04 - Group Policy e política de senha
 
+> **Em poucas palavras:** Uma GPO é uma regra escrita uma vez e aplicada sozinha em todas as máquinas, como um aviso que chega a todo mundo ao mesmo tempo.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 GPO é o que mantém dezenas ou centenas de máquinas configuradas do mesmo jeito sem precisar passar em cada uma. Neste lab aplico uma política de senha para o domínio, uma regra mais rígida para a equipe de TI e um pacote básico de segurança para as estações.
 
 ## Política de senha do domínio

@@ -1,5 +1,9 @@
 # Lab 03 - DNS e DHCP
 
+> **Em poucas palavras:** O DNS é a agenda de contatos da rede: troca nomes por endereços IP. O DHCP é quem entrega um IP para cada máquina que se conecta, sem ninguém configurar à mão.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Com o domínio criado, faltam os dois serviços que fazem a rede funcionar sozinha: o DNS resolve os nomes e o DHCP entrega IP para as estações.
 
 ## DNS (`Set-LabDns.ps1`)

@@ -1,5 +1,9 @@
 # Lab 08 - FortiGate e VLANs
 
+> **Em poucas palavras:** É dividir o prédio em salas com porta trancada. Cada tipo de máquina fica numa rede própria (VLAN), e o firewall decide quem pode passar de uma sala para a outra.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Nos labs anteriores a rede é plana: tudo na mesma faixa. Numa empresa isso é arriscado, porque um vírus numa estação enxerga todos os servidores. Neste lab separo a rede em VLANs e uso um FortiGate para controlar o que pode falar com o quê.
 
 ## Desenho

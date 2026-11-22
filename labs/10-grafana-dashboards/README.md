@@ -1,5 +1,9 @@
 # Lab 10 - Dashboards no Grafana
 
+> **Em poucas palavras:** O Grafana é o painel do carro: junta os números do Zabbix numa tela só, fácil de ler de longe.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 No trabalho eu acompanho os serviços e os indicadores de SLA em dashboards no Grafana. Aqui monto o mesmo esquema para o lab: o Grafana lê os dados do Zabbix (Lab 07) e mostra tudo numa tela só, que dá para deixar aberta numa TV da equipe.
 
 ## Como está montado
