@@ -1,5 +1,9 @@
 # Lab 07 - Monitoramento com Zabbix
 
+> **Em poucas palavras:** O Zabbix é o vigia da infraestrutura: confere os servidores o tempo todo e avisa quando algo sai do normal, antes de o usuário abrir um chamado.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Na Desktop eu acompanhava a rede dos clientes pelo Zabbix e pelo PRTG, e o que mais fazia diferença era ver o problema antes de o cliente ligar. Aqui monto o Zabbix para o lab e crio alguns itens que não vêm prontos, focados em AD e backup.
 
 ## Como está montado

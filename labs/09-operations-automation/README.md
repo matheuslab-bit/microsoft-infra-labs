@@ -1,5 +1,9 @@
 # Lab 09 - Automação do dia a dia
 
+> **Em poucas palavras:** Scripts que fazem as tarefas repetitivas da semana do mesmo jeito todas as vezes, sem esquecer nenhum passo.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Scripts para tarefas que se repetem toda semana e que, feitas à mão, acabam esquecidas ou feitas pela metade. Todos aceitam `-WhatIf`.
 
 ## Relatório de saúde do AD (`Get-LabADHealthReport.ps1`)

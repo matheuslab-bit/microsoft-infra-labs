@@ -1,5 +1,9 @@
 # Lab 02 - Active Directory
 
+> **Em poucas palavras:** O Active Directory é a lista de chamada da empresa: diz quem é cada pessoa, em que grupo está e o que pode acessar. Este lab cria o domínio, organiza as pastas de usuários (OUs) e cadastra todo mundo a partir de uma planilha.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Aqui o DC01 vira o primeiro controlador de domínio de `corp.lab.internal`, ganha uma estrutura de OUs e recebe os usuários a partir de uma planilha CSV.
 
 É a parte que eu mais fazia na prática: no contact center, criar e organizar contas no AD era rotina diária. A ideia é fazer do jeito que eu gostaria de encontrar um AD organizado.
