@@ -73,7 +73,12 @@ Três automações em Node.js, sem dependências. [Ver detalhes](automacao-js/RE
 [Runbooks e checklists](docs/README.md) escritos do jeito que eu gostaria de encontrar numa base de conhecimento:
 
 - Conta bloqueando toda hora, estação sem rede, voz ruim no VoIP, disco cheio e falha de replicação do AD
-- Entrada e saída de colaborador, servidor novo antes de ir para produção e mudança planejada
+- Entrada e saída de colaborador, servidor novo antes de ir para produção, mudança planejada e TI de uma unidade industrial nova
+- [Infraestrutura numa indústria farmacêutica](docs/guias/infra-industria-farmaceutica.md): o que a Anvisa exige da TI (RDC 658, IN 134 e integridade de dados)
+
+## Analista de infraestrutura pleno
+
+[O que a vaga pede e onde eu mostro](docs/analista-infraestrutura-pleno.md): cada responsabilidade da vaga com a prova ao lado, seja experiência, lab ou guia de estudo. O que ainda não pratiquei aparece como estudo.
 
 ## Como o código está organizado
 

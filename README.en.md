@@ -46,7 +46,11 @@ Three dependency-free Node.js tools ([details](automacao-js/README.md)): a ticke
 
 ## Runbooks and checklists
 
-[Troubleshooting guides](docs/README.md) for account lockouts, workstations without network, VoIP voice quality, full disks and AD replication failures, plus checklists for onboarding, offboarding, new servers and planned changes.
+[Troubleshooting guides](docs/README.md) for account lockouts, workstations without network, VoIP voice quality, full disks and AD replication failures, plus checklists for onboarding, offboarding, new servers, planned changes and IT for a new industrial site.
+
+## Mid-level infrastructure analyst
+
+[What the role asks for and where I show it](docs/analista-infraestrutura-pleno.md) (in Portuguese): each responsibility of the role next to its proof, whether work experience, a lab or a study guide. Things I have not practiced yet are marked as study. There is also a guide on [IT infrastructure in a pharmaceutical plant](docs/guias/infra-industria-farmaceutica.md): what Brazil's health regulator (Anvisa) expects from IT, data integrity (ALCOA+) and IT/OT network separation.
 
 ## Tests
 
