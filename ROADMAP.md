@@ -24,8 +24,18 @@
 - [ ] Hardening: LAPS, delegação de permissões e separação das contas administrativas
 - [ ] Alertas do Grafana e do Zabbix chegando no Teams ou no Telegram
 
+## Rastreabilidade e auditoria
+
+Transformar em lab o que está no [guia de rastreabilidade](docs/guias/rastreabilidade-e-auditoria.md):
+
+- [ ] NTP: DC01 sincronizando com uma fonte externa, o domínio seguindo o DC01 e um item do Zabbix alertando relógio fora do horário
+- [ ] Política de auditoria do Windows por GPO (logon, mudança de grupo, acesso a pasta) com os eventos centralizados
+- [ ] Registro de instalação de um servidor gerado por script, com versões, configuração e conferência
+- [ ] Revisão de acessos periódica: relatório por grupo pronto para o dono do sistema aprovar
+
 ## Certificações que quero tirar
 
+- [ ] ITIL 4 Foundation
 - [ ] AZ-900 (Azure Fundamentals)
 - [ ] MS-900 (Microsoft 365 Fundamentals)
 - [ ] Fortinet Certified Associate

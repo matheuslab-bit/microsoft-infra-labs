@@ -73,7 +73,8 @@ Três automações em Node.js, sem dependências. [Ver detalhes](automacao-js/RE
 [Runbooks e checklists](docs/README.md) escritos do jeito que eu gostaria de encontrar numa base de conhecimento:
 
 - Conta bloqueando toda hora, estação sem rede, voz ruim no VoIP, disco cheio e falha de replicação do AD
-- Entrada e saída de colaborador, servidor novo antes de ir para produção e mudança planejada
+- Entrada e saída de colaborador, servidor novo antes de ir para produção, mudança planejada e TI de uma filial nova
+- Rastreabilidade para auditoria (quem fez o quê, e quando) e separação da rede do escritório e da rede de automação
 
 ## Como o código está organizado
 
