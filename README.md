@@ -19,14 +19,17 @@ O ambiente Microsoft de uma empresa, montado do zero num laboratório Hyper-V e 
 
 Quatro máquinas virtuais numa rede isolada, com saída para a internet pelo host:
 
-```text
-Host (Windows 11 Pro + Hyper-V)
- └── switch interno "LabInternal" + NAT (10.50.0.0/24)
-      ├── DC01   10.50.0.10   controlador de domínio, DNS e DHCP
-      ├── FS01   10.50.0.20   servidor de arquivos e backup
-      ├── MON01  10.50.0.30   Zabbix e Grafana (Ubuntu + Docker)
-      └── CL01   DHCP         estação Windows 11
+```mermaid
+flowchart LR
+    internet((Internet)) --- host["Host Windows 11<br/>Hyper-V + NAT"]
+    host --- sw["Switch interno LabInternal<br/>10.50.0.0/24"]
+    sw --- dc["DC01 · 10.50.0.10<br/>AD, DNS e DHCP"]
+    sw --- fs["FS01 · 10.50.0.20<br/>Arquivos e backup"]
+    sw --- mon["MON01 · 10.50.0.30<br/>Zabbix e Grafana"]
+    sw --- cl["CL01 · via DHCP<br/>Estação Windows 11"]
 ```
+
+No [lab 08](labs/08-fortigate-segmentation/README.md), essa rede plana é dividida em VLANs de servidores, estações e gerência, com o FortiGate controlando o que passa entre elas.
 
 ## Labs
 
