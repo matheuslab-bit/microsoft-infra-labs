@@ -1,5 +1,9 @@
 # Lab 01 - Ambiente Hyper-V
 
+> **Em poucas palavras:** É a sala de servidores dentro de um computador só. Um script cria a rede isolada e as quatro máquinas virtuais que todos os outros labs usam.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Este é o lab base: cria a rede isolada e as máquinas virtuais que todos os outros labs usam.
 
 ## O que os scripts fazem

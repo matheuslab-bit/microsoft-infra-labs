@@ -1,5 +1,9 @@
 # Lab 05 - Servidor de arquivos com permissão por grupo
 
+> **Em poucas palavras:** Cada departamento tem a sua pasta, e quem abre a porta é o grupo, não a pessoa. Quem entra no grupo ganha o acesso; quem sai perde.
+
+**Situação:** scripts prontos e testados no CI. A execução no meu Hyper-V está em andamento, e o checklist no fim desta página mostra o que já foi conferido.
+
 Pastas departamentais no FS01, com acesso controlado por grupos, e nunca por usuário direto na pasta.
 
 ## Como a permissão funciona (AGDLP)

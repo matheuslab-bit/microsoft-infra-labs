@@ -1,57 +1,39 @@
 # Microsoft Infra Labs
 
-My infrastructure portfolio. Here I build a company's Microsoft environment from scratch (domain, Group Policy, DNS, DHCP, file server, backup, monitoring and firewall), keep the scripts I use day to day and write the troubleshooting guides I would like to find in a knowledge base.
+A small company's Microsoft environment, built from scratch on a Hyper-V lab and automated with PowerShell: domain, Group Policy, DNS, DHCP, file server, backup, monitoring and firewall.
 
 [Português](README.md) | [English](README.en.md)
 
 [![CI](https://github.com/matheuslab-bit/microsoft-infra-labs/actions/workflows/powershell-ci.yml/badge.svg)](https://github.com/matheuslab-bit/microsoft-infra-labs/actions/workflows/powershell-ci.yml)
 
-## Why this repository exists
+## In 30 seconds
 
-I have worked in IT infrastructure since 2014. I managed Active Directory for a contact center with about 2,000 agent seats, along with Group Policy, Hyper-V, backups and FortiGate. I monitored business customers' networks with Zabbix and PRTG, and today I am a Tier 2 analyst for telecom and VoIP, following our services on Grafana and automating team tasks with JavaScript.
+- **10 labs** that build a company's infrastructure step by step, each ending with a checklist that proves it works.
+- **A toolkit** of the scripts I use on support tickets: network diagnostics, inventory, account lockout source.
+- **Runbooks and checklists** written like a knowledge base: the problem, the order to investigate and the ready-to-run command.
+- **Everything tested on every change** in GitHub Actions (lint and tests on Windows and Linux).
 
-This repository brings all of that together, documented and repeatable. The lab write-ups are in Brazilian Portuguese; script help and code comments are in English.
-
-My cloud work lives in a separate repository: [google-cloud-portfolio](https://github.com/matheuslab-bit/google-cloud-portfolio).
-
-## What is inside
-
-```text
-labs/          10 labs that build a company environment on Hyper-V
-toolkit/       day-to-day scripts: .bat, PowerShell and Linux
-automacao-js/  JavaScript (Node.js) automations, with tests
-docs/          troubleshooting runbooks and checklists
-```
+The write-ups are in Brazilian Portuguese; script help and code comments are in English.
 
 ## Labs
 
-1. [Hyper-V environment](labs/01-hyperv-environment/README.md): isolated network and VMs created from one config file.
-2. [Active Directory](labs/02-active-directory/README.md): DC promotion, OU structure, bulk user creation from CSV.
-3. [DNS and DHCP](labs/03-dns-dhcp/README.md): reverse zone, forwarders, scavenging, DHCP scope.
-4. [Group Policy](labs/04-group-policy/README.md): password policy, stricter rule for IT, workstation baseline, GPO backups.
-5. [File server](labs/05-file-server/README.md): department shares with group-based permissions (AGDLP).
-6. [Backup and recovery](labs/06-backup-recovery/README.md): backups with integrity check, restore testing, AD Recycle Bin.
-7. [Zabbix monitoring](labs/07-monitoring-zabbix/README.md): Zabbix on Docker, custom AD and backup items, an importable template.
-8. [FortiGate and VLANs](labs/08-fortigate-segmentation/README.md): network split into VLANs with access rules between them.
-9. [Day-to-day automation](labs/09-operations-automation/README.md): AD health report, employee offboarding, stale accounts.
-10. [Grafana dashboards](labs/10-grafana-dashboards/README.md): Grafana reading Zabbix, with an infrastructure dashboard provisioned on startup.
+| # | Lab | What it solves |
+| --- | --- | --- |
+| 01 | [Hyper-V environment](labs/01-hyperv-environment/README.md) | Network and VMs created from one config file |
+| 02 | [Active Directory](labs/02-active-directory/README.md) | Domain, OU structure and bulk user creation from CSV |
+| 03 | [DNS and DHCP](labs/03-dns-dhcp/README.md) | Name resolution and automatic IP addressing |
+| 04 | [Group Policy](labs/04-group-policy/README.md) | Password policy, stricter rule for IT, workstation baseline |
+| 05 | [File server](labs/05-file-server/README.md) | Department shares with group-based access (AGDLP) |
+| 06 | [Backup and recovery](labs/06-backup-recovery/README.md) | Backups with hash verification and restore testing |
+| 07 | [Zabbix monitoring](labs/07-monitoring-zabbix/README.md) | AD, backup and server alerts, with an importable template |
+| 08 | [FortiGate and VLANs](labs/08-fortigate-segmentation/README.md) | Network split into VLANs with access rules between them |
+| 09 | [Day-to-day automation](labs/09-operations-automation/README.md) | AD health report, offboarding, stale accounts |
+| 10 | [Grafana dashboards](labs/10-grafana-dashboards/README.md) | Infrastructure dashboard provisioned on startup |
 
-## Toolkit
+**Status:** the scripts are done and pass CI. Running each lab on my Hyper-V host is in progress; a lab counts as done only when the checklist at the end of its README is complete.
 
-Scripts that work on any machine. [See all](toolkit/README.md). Highlights: a full machine report to attach to a ticket (`coleta-info.bat`), a 7-step "no internet" diagnostic (`diagnostico-rede.bat`), a port tester with presets for AD, web, RDP, SQL and VoIP (`Test-Portas.ps1`), remote inventory to CSV, finding the source of account lockouts, reboot history and group membership reviews.
+## About me
 
-## JavaScript automation
+I have worked in IT since 2014: Active Directory for a contact center with about 2,000 agent seats (Group Policy, Hyper-V, backup, FortiGate), network monitoring with Zabbix and PRTG, and today Tier 2 telecom and VoIP support. My cloud labs live in [google-cloud-portfolio](https://github.com/matheuslab-bit/google-cloud-portfolio).
 
-Three dependency-free Node.js tools ([details](automacao-js/README.md)): a ticket report with SLA and mean time to resolve, a TLS certificate expiry checker, and a web service health monitor with JSON output for Zabbix or Grafana.
-
-## Runbooks and checklists
-
-[Troubleshooting guides](docs/README.md) for account lockouts, workstations without network, VoIP voice quality, full disks and AD replication failures, plus checklists for onboarding, offboarding, new servers, planned changes and IT for a new branch site. Two guides cover audit traceability (who did what, and when) and separating office IT from operational technology (OT) networks.
-
-## Tests
-
-GitHub Actions runs PSScriptAnalyzer, Pester on Ubuntu and Windows, `node --test` for the JavaScript tools, ShellCheck for the Linux script, and `docker compose config` for Zabbix and Grafana on every push.
-
-## Current status
-
-The scripts pass CI, and the toolkit has been tested on Windows 11. Next step: run each lab on my Hyper-V host and tick the checklist at the end of each lab README. See the [roadmap](ROADMAP.md).
+[LinkedIn](https://linkedin.com/in/matheus-s-ti) · [matheus.silva.gcp@gmail.com](mailto:matheus.silva.gcp@gmail.com)
