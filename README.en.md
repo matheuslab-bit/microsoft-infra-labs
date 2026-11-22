@@ -46,7 +46,7 @@ Three dependency-free Node.js tools ([details](automacao-js/README.md)): a ticke
 
 ## Runbooks and checklists
 
-[Troubleshooting guides](docs/README.md) for account lockouts, workstations without network, VoIP voice quality, full disks and AD replication failures, plus checklists for onboarding, offboarding, new servers and planned changes.
+[Troubleshooting guides](docs/README.md) for account lockouts, workstations without network, VoIP voice quality, full disks and AD replication failures, plus checklists for onboarding, offboarding, new servers, planned changes and IT for a new branch site. Two guides cover audit traceability (who did what, and when) and separating office IT from operational technology (OT) networks.
 
 ## Tests
 
