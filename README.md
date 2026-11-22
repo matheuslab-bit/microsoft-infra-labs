@@ -33,20 +33,20 @@ No [lab 08](labs/08-fortigate-segmentation/README.md), essa rede plana é dividi
 
 ## Labs
 
-| # | Lab | O que resolve |
-| --- | --- | --- |
-| 01 | [Ambiente Hyper-V](labs/01-hyperv-environment/README.md) | Cria a rede e as VMs a partir de um arquivo de configuração |
-| 02 | [Active Directory](labs/02-active-directory/README.md) | Domínio, estrutura de OUs e usuários criados em massa por CSV |
-| 03 | [DNS e DHCP](labs/03-dns-dhcp/README.md) | Nomes resolvendo e IPs entregues automaticamente |
-| 04 | [Group Policy](labs/04-group-policy/README.md) | Política de senha, regra mais rígida para a TI e segurança das estações |
-| 05 | [Servidor de arquivos](labs/05-file-server/README.md) | Pastas por departamento, com acesso por grupo (AGDLP) |
-| 06 | [Backup e recuperação](labs/06-backup-recovery/README.md) | Backup com conferência de hash e teste de restauração |
-| 07 | [Monitoramento com Zabbix](labs/07-monitoring-zabbix/README.md) | Alertas de AD, backup e servidores, com template pronto |
-| 08 | [FortiGate e VLANs](labs/08-fortigate-segmentation/README.md) | Rede separada em VLANs, com regras de acesso entre elas |
-| 09 | [Automação do dia a dia](labs/09-operations-automation/README.md) | Relatório de saúde do AD, desligamento de colaborador, contas paradas |
-| 10 | [Dashboards no Grafana](labs/10-grafana-dashboards/README.md) | Painel de infraestrutura que já sobe configurado |
+| # | Lab | O que resolve | Situação |
+| --- | --- | --- | --- |
+| 01 | [Ambiente Hyper-V](labs/01-hyperv-environment/README.md) | Cria a rede e as VMs a partir de um arquivo de configuração | **Executado** ([relatório](labs/01-hyperv-environment/evidencias/2026-11-22-test-labenvironment.txt)) |
+| 02 | [Active Directory](labs/02-active-directory/README.md) | Domínio, estrutura de OUs e usuários criados em massa por CSV | Script pronto |
+| 03 | [DNS e DHCP](labs/03-dns-dhcp/README.md) | Nomes resolvendo e IPs entregues automaticamente | Script pronto |
+| 04 | [Group Policy](labs/04-group-policy/README.md) | Política de senha, regra mais rígida para a TI e segurança das estações | Script pronto |
+| 05 | [Servidor de arquivos](labs/05-file-server/README.md) | Pastas por departamento, com acesso por grupo (AGDLP) | Script pronto |
+| 06 | [Backup e recuperação](labs/06-backup-recovery/README.md) | Backup com conferência de hash e teste de restauração | Script pronto |
+| 07 | [Monitoramento com Zabbix](labs/07-monitoring-zabbix/README.md) | Alertas de AD, backup e servidores, com template pronto | Script pronto |
+| 08 | [FortiGate e VLANs](labs/08-fortigate-segmentation/README.md) | Rede separada em VLANs, com regras de acesso entre elas | Script pronto |
+| 09 | [Automação do dia a dia](labs/09-operations-automation/README.md) | Relatório de saúde do AD, desligamento de colaborador, contas paradas | Script pronto |
+| 10 | [Dashboards no Grafana](labs/10-grafana-dashboards/README.md) | Painel de infraestrutura que já sobe configurado | Script pronto |
 
-**Situação:** os scripts estão prontos e passam no CI. A execução de cada lab no meu Hyper-V está em andamento: um lab só é marcado como concluído quando o checklist do fim do README dele estiver completo.
+**Situação:** todos os scripts passam no CI, e os labs estão sendo executados no meu Hyper-V em ordem. Um lab só vira **Executado** quando o checklist do fim do README dele está completo, com o relatório de evidência.
 
 ## Além dos labs
 

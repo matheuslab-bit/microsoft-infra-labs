@@ -1,0 +1,14 @@
+Lab 01 - environment check | 2026-11-22 01:23:59 | host DESKTOP-DC27SMD
+
+Check               Result Detail
+-----               ------ ------
+Switch              PASS   LabInternal is Internal
+Gateway on host     PASS   10.50.0.1/24 on vEthernet (LabInternal)
+NAT                 PASS   LabNAT for 10.50.0.0/24; no other NAT
+VM DC01             PASS   Gen2, Secure Boot, 2 vCPU, state Running
+VM FS01             PASS   Gen2, Secure Boot, 2 vCPU, state Off
+VM MON01            SKIP   not created yet
+VM CL01             SKIP   not created yet
+Guest DC01 internet PASS   DC01 10.50.0.10 reached 1.1.1.1:443 through the NAT
+Checkpoint rollback PASS   file created after the checkpoint was gone after the restore
+

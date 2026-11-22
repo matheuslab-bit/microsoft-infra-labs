@@ -17,20 +17,20 @@ The write-ups are in Brazilian Portuguese; script help and code comments are in 
 
 ## Labs
 
-| # | Lab | What it solves |
-| --- | --- | --- |
-| 01 | [Hyper-V environment](labs/01-hyperv-environment/README.md) | Network and VMs created from one config file |
-| 02 | [Active Directory](labs/02-active-directory/README.md) | Domain, OU structure and bulk user creation from CSV |
-| 03 | [DNS and DHCP](labs/03-dns-dhcp/README.md) | Name resolution and automatic IP addressing |
-| 04 | [Group Policy](labs/04-group-policy/README.md) | Password policy, stricter rule for IT, workstation baseline |
-| 05 | [File server](labs/05-file-server/README.md) | Department shares with group-based access (AGDLP) |
-| 06 | [Backup and recovery](labs/06-backup-recovery/README.md) | Backups with hash verification and restore testing |
-| 07 | [Zabbix monitoring](labs/07-monitoring-zabbix/README.md) | AD, backup and server alerts, with an importable template |
-| 08 | [FortiGate and VLANs](labs/08-fortigate-segmentation/README.md) | Network split into VLANs with access rules between them |
-| 09 | [Day-to-day automation](labs/09-operations-automation/README.md) | AD health report, offboarding, stale accounts |
-| 10 | [Grafana dashboards](labs/10-grafana-dashboards/README.md) | Infrastructure dashboard provisioned on startup |
+| # | Lab | What it solves | Status |
+| --- | --- | --- | --- |
+| 01 | [Hyper-V environment](labs/01-hyperv-environment/README.md) | Network and VMs created from one config file | **Done** ([report](labs/01-hyperv-environment/evidencias/2026-11-22-test-labenvironment.txt)) |
+| 02 | [Active Directory](labs/02-active-directory/README.md) | Domain, OU structure and bulk user creation from CSV | Script ready |
+| 03 | [DNS and DHCP](labs/03-dns-dhcp/README.md) | Name resolution and automatic IP addressing | Script ready |
+| 04 | [Group Policy](labs/04-group-policy/README.md) | Password policy, stricter rule for IT, workstation baseline | Script ready |
+| 05 | [File server](labs/05-file-server/README.md) | Department shares with group-based access (AGDLP) | Script ready |
+| 06 | [Backup and recovery](labs/06-backup-recovery/README.md) | Backups with hash verification and restore testing | Script ready |
+| 07 | [Zabbix monitoring](labs/07-monitoring-zabbix/README.md) | AD, backup and server alerts, with an importable template | Script ready |
+| 08 | [FortiGate and VLANs](labs/08-fortigate-segmentation/README.md) | Network split into VLANs with access rules between them | Script ready |
+| 09 | [Day-to-day automation](labs/09-operations-automation/README.md) | AD health report, offboarding, stale accounts | Script ready |
+| 10 | [Grafana dashboards](labs/10-grafana-dashboards/README.md) | Infrastructure dashboard provisioned on startup | Script ready |
 
-**Status:** the scripts are done and pass CI. Running each lab on my Hyper-V host is in progress; a lab counts as done only when the checklist at the end of its README is complete.
+**Status:** every script passes CI, and the labs are being run on my Hyper-V host in order. A lab is marked **Done** only when the checklist at the end of its README is complete, with an evidence report.
 
 ## About me
 
