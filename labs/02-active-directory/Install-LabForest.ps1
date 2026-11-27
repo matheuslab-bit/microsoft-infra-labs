@@ -23,14 +23,28 @@ $config = Get-LabConfig -Path $ConfigPath
 $dc = $config.VMs | Where-Object { $_.Role -eq 'DomainController' } | Select-Object -First 1
 
 if ($Phase -eq 'Prepare') {
-    if ($PSCmdlet.ShouldProcess($InterfaceAlias, "Set static IP $($dc.IPAddress)/$($config.Network.PrefixLength)")) {
+    $current = Get-NetIPAddress -InterfaceAlias $InterfaceAlias -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+        Where-Object { $_.IPAddress -eq $dc.IPAddress -and $_.PrefixLength -eq $config.Network.PrefixLength }
+    $route = Get-NetRoute -InterfaceAlias $InterfaceAlias -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue |
+        Where-Object { $_.NextHop -eq $config.Network.Gateway }
+
+    if ($current -and $route) {
+        Write-LabLog -Message "Static IP $($dc.IPAddress) and gateway $($config.Network.Gateway) already set."
+    } elseif ($PSCmdlet.ShouldProcess($InterfaceAlias, "Set static IP $($dc.IPAddress)/$($config.Network.PrefixLength)")) {
+        Set-NetIPInterface -InterfaceAlias $InterfaceAlias -AddressFamily IPv4 -Dhcp Disabled
         Get-NetIPAddress -InterfaceAlias $InterfaceAlias -AddressFamily IPv4 -ErrorAction SilentlyContinue |
             Remove-NetIPAddress -Confirm:$false -ErrorAction SilentlyContinue
+        # an old default route makes New-NetIPAddress -DefaultGateway fail and leaves the server without an IP
+        Get-NetRoute -InterfaceAlias $InterfaceAlias -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue |
+            Remove-NetRoute -Confirm:$false -ErrorAction SilentlyContinue
         New-NetIPAddress -InterfaceAlias $InterfaceAlias -IPAddress $dc.IPAddress `
             -PrefixLength $config.Network.PrefixLength -DefaultGateway $config.Network.Gateway | Out-Null
-        # after promotion the DC uses its own DNS
-        Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses '127.0.0.1'
         Write-LabLog -Message "Static IP $($dc.IPAddress) configured."
+    }
+
+    # the DC uses its own DNS: its own IP first and loopback second (Microsoft guidance for a single DC)
+    if ($PSCmdlet.ShouldProcess($InterfaceAlias, "Set DNS servers $($dc.IPAddress), 127.0.0.1")) {
+        Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses @($dc.IPAddress, '127.0.0.1')
     }
     if ($env:COMPUTERNAME -ne $dc.Name -and $PSCmdlet.ShouldProcess($env:COMPUTERNAME, "Rename to $($dc.Name) and restart")) {
         Rename-Computer -NewName $dc.Name -Restart

@@ -29,10 +29,11 @@ Usuários, computadores e grupos ficam em OUs separadas. Assim dá para aplicar 
 
 ## Scripts
 
-- `Install-LabForest.ps1 -Phase Prepare`: define o IP fixo, aponta o DNS para o próprio servidor e renomeia para DC01. Pede reinício.
+- `Install-LabForest.ps1 -Phase Prepare`: define o IP fixo (desliga o DHCP e troca a rota padrão antiga, para o servidor não ficar sem rede no meio da troca), aponta o DNS para o próprio servidor e renomeia para DC01. Pode ser rodado de novo sem estragar nada. Pede reinício.
 - `Install-LabForest.ps1 -Phase Promote`: instala o AD DS e cria a floresta. A senha do modo de restauração (DSRM) é digitada na hora e não fica salva em lugar nenhum.
 - `New-LabOUStructure.ps1`: cria as OUs com proteção contra exclusão acidental.
 - `Import-LabUsers.ps1`: lê o [`users.csv`](../../data/users.csv), cria os grupos `GG_<departamento>`, cria cada usuário na OU do departamento e gera um CSV com tudo que foi criado.
+- `Test-LabActiveDirectory.ps1`: só lê o ambiente. Confere nome, IP e DNS do DC, domínio, serviços, `dcdiag /q`, zonas DNS, OUs, redirecionamento de computadores, grupos e usuários, e salva o relatório de evidência em `C:\Lab\evidencia-lab02.txt`.
 
 ## Detalhes que fazem diferença
 
@@ -43,14 +44,27 @@ Usuários, computadores e grupos ficam em OUs separadas. Assim dá para aplicar 
 
 ## Como rodar
 
+No host, em um PowerShell como administrador, copie o repositório para o DC01 e crie um checkpoint antes de mexer no servidor:
+
 ```powershell
+$cred = Get-Credential Administrator
+$s = New-PSSession -VMName DC01 -Credential $cred
+Copy-Item -ToSession $s -Path "$HOME\Documents\Projetos\microsoft-infra-labs" -Destination C:\Lab\microsoft-infra-labs -Recurse -Force
+Checkpoint-VM -Name DC01 -SnapshotName 'antes-lab02'
+```
+
+Dentro do DC01, em um PowerShell como administrador, na pasta `C:\Lab\microsoft-infra-labs\labs\02-active-directory`:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force   # vale só para esta janela
 .\Install-LabForest.ps1 -Phase Prepare
 # depois do reinício
 .\Install-LabForest.ps1 -Phase Promote
-# depois do reinício, já logado no domínio
+# depois do reinício, já logado no domínio como CORP\Administrator
 .\New-LabOUStructure.ps1
 .\Import-LabUsers.ps1 -WhatIf
 .\Import-LabUsers.ps1
+.\Test-LabActiveDirectory.ps1
 ```
 
 ## Cuidados
